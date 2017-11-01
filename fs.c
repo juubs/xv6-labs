@@ -20,6 +20,8 @@
 #include "buf.h"
 #include "file.h"
 
+#define PRINT_FS
+
 #define min(a, b) ((a) < (b) ? (a) : (b))
 static void itrunc(struct inode*);
 // there should be one superblock per disk device, but we run with
@@ -44,6 +46,9 @@ bzero(int dev, int bno)
   struct buf *bp;
 
   bp = bread(dev, bno);
+#ifdef PRINT_FS
+    cprintf("write %d bzero\n",bno);
+#endif
   memset(bp->data, 0, BSIZE);
   log_write(bp);
   brelse(bp);
@@ -61,6 +66,9 @@ balloc(uint dev)
   bp = 0;
   for(b = 0; b < sb.size; b += BPB){
     bp = bread(dev, BBLOCK(b, sb));
+#ifdef PRINT_FS
+    cprintf("write %d balloc\n",BBLOCK(b, sb));
+#endif
     for(bi = 0; bi < BPB && b + bi < sb.size; bi++){
       m = 1 << (bi % 8);
       if((bp->data[bi/8] & m) == 0){  // Is block free?
@@ -85,6 +93,9 @@ bfree(int dev, uint b)
 
   readsb(dev, &sb);
   bp = bread(dev, BBLOCK(b, sb));
+#ifdef PRINT_FS
+    cprintf("write %d bfree\n",BBLOCK(b,sb));
+#endif
   bi = b % BPB;
   m = 1 << (bi % 8);
   if((bp->data[bi/8] & m) == 0)
@@ -186,6 +197,9 @@ ialloc(uint dev, short type)
 
   for(inum = 1; inum < sb.ninodes; inum++){
     bp = bread(dev, IBLOCK(inum, sb));
+#ifdef PRINT_FS
+    cprintf("write %d ialloc\n",IBLOCK(inum, sb));
+#endif
     dip = (struct dinode*)bp->data + inum%IPB;
     if(dip->type == 0){  // a free inode
       memset(dip, 0, sizeof(*dip));
@@ -207,6 +221,9 @@ iupdate(struct inode *ip)
   struct dinode *dip;
 
   bp = bread(ip->dev, IBLOCK(ip->inum, sb));
+#ifdef PRINT_FS
+    cprintf("write %d iupdate\n",IBLOCK(ip->inum, sb));
+#endif
   dip = (struct dinode*)bp->data + ip->inum%IPB;
   dip->type = ip->type;
   dip->major = ip->major;
@@ -482,6 +499,9 @@ writei(struct inode *ip, char *src, uint off, uint n)
 
   for(tot=0; tot<n; tot+=m, off+=m, src+=m){
     bp = bread(ip->dev, bmap(ip, off/BSIZE));
+#ifdef PRINT_FS
+    cprintf("write %d writei\n",bmap(ip, off/BSIZE));
+#endif
     m = min(n - tot, BSIZE - off%BSIZE);
     memmove(bp->data + off%BSIZE, src, m);
     log_write(bp);

@@ -197,11 +197,11 @@ ialloc(uint dev, short type)
 
   for(inum = 1; inum < sb.ninodes; inum++){
     bp = bread(dev, IBLOCK(inum, sb));
+    dip = (struct dinode*)bp->data + inum%IPB;
+    if(dip->type == 0){  // a free inode
 #ifdef PRINT_FS
     cprintf("write %d ialloc\n",IBLOCK(inum, sb));
 #endif
-    dip = (struct dinode*)bp->data + inum%IPB;
-    if(dip->type == 0){  // a free inode
       memset(dip, 0, sizeof(*dip));
       dip->type = type;
       log_write(bp);   // mark it allocated on the disk

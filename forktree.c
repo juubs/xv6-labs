@@ -19,6 +19,9 @@
    if (fork() == 0) {
      forktree(nxt);
      exit();
+   } else
+   {
+       wait();
    }
  }
  
@@ -29,8 +32,6 @@
  
    forkchild(cur, '0');
    forkchild(cur, '1');
-   wait();
-   wait();
  }
  
  int

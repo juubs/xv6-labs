@@ -30,6 +30,7 @@ OBJS = \
 	monitor.o\
 	readline.o\
 	printfmt.o\
+	kdebug.o\
 
 # Cross-compiling (e.g., on Mac OS X)
 # TOOLPREFIX = i386-jos-elf

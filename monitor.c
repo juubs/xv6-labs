@@ -6,6 +6,7 @@
 #include "x86.h"
 #include "types.h"
 #include "string.h"
+#include "kdebug.h"
 
 #include "monitor.h"
 

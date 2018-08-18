@@ -133,4 +133,14 @@ strchr(const char *s, char c)
   return 0;
 }
 
+// Return a pointer to the first occurrence of 'c' in 's',
+ // or a pointer to the string-ending null character if the string has no 'c'.
+ char *
+ strfind(const char *s, char c)
+ {
+   for (; *s; s++)
+     if (*s == c)
+       break;
+   return (char*)s;
+ }
 

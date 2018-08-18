@@ -47,6 +47,9 @@ main(void)
   ioapicinit();    // another interrupt controller
   consoleinit();   // console hardware
   uartinit();      // serial port
+
+  cprintf("6828 decimal is %o octal!\n", 6828);
+  
   pinit();         // process table
   tvinit();        // trap vectors
   binit();         // buffer cache

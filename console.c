@@ -14,6 +14,10 @@
 #include "proc.h"
 #include "x86.h"
 
+int uartgetc(void);
+int kbdgetc(void);
+
+
 static void consputc(int);
 
 static int panicked = 0;
@@ -186,6 +190,31 @@ struct {
 
 #define C(x)  ((x)-'@')  // Control-x
 
+
+// return the next input character from the console, or 0 if none waiting
+int
+cons_getc(void)
+{
+  int c;
+
+  // poll for any pending input characters,
+  // so that this function works even when interrupts are disabled
+  // (e.g., when called from the kernel monitor).
+  consoleintr(uartgetc);
+  consoleintr(kbdgetc);
+
+  // grab the next character from the input buffer.
+  if (input.r != input.w) {
+    c = input.buf[input.r++];
+    if (input.r == INPUT_BUF)
+      input.r = 0;
+    return c;
+  }
+  return 0;
+}
+
+
+    
 void
 consoleintr(int (*getc)(void))
 {
@@ -296,3 +325,25 @@ consoleinit(void)
   ioapicenable(IRQ_KBD, 0);
 }
 
+void
+cputchar(int c)
+{
+  consputc(c);
+}
+
+int
+getchar(void)
+{
+  int c;
+
+  while ((c = cons_getc()) == 0)
+    /* do nothing */;
+  return c;
+}
+
+int
+iscons(int fdnum)
+{
+  // used by readline
+  return 1;
+}

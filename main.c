@@ -5,6 +5,9 @@
 #include "mmu.h"
 #include "proc.h"
 #include "x86.h"
+#include "monitor.h"
+
+#define LAB 1
 
 static void startothers(void);
 static void mpmain(void)  __attribute__((noreturn));
@@ -57,7 +60,12 @@ mpmain(void)
   cprintf("cpu%d: starting\n", cpunum());
   idtinit();       // load idt register
   xchg(&cpu->started, 1); // tell startothers() we're up
-  scheduler();     // start running processes
+#if LAB == 1
+  while (1)
+    monitor(0);
+#else
+   scheduler();     // start running processes
+#endif
 }
 
 pde_t entrypgdir[];  // For entry.S

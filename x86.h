@@ -183,3 +183,16 @@ struct trapframe {
   ushort ss;
   ushort padding6;
 };
+
+static __inline uint32_t read_eflags(void) __attribute__((always_inline));
+static __inline void write_eflags(uint32_t eflags) __attribute__((always_inline));
+static __inline uint32_t read_ebp(void) __attribute__((always_inline));
+static __inline uint32_t read_esp(void) __attribute__((always_inline));
+
+static __inline void
+breakpoint(void)
+{
+  __asm __volatile("int3");
+}
+
+

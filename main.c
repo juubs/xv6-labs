@@ -14,6 +14,23 @@ static void mpmain(void)  __attribute__((noreturn));
 extern pde_t *kpgdir;
 extern char end[]; // first address after kernel loaded from ELF file
 
+#if LAB >= 2    // ...then leave this code out.
+#elif LAB >= 1
+// Test the stack backtrace function (lab 1 only)
+void
+test_backtrace(int x)
+{
+  cprintf("entering test_backtrace %d\n", x);
+  if (x > 0)
+    test_backtrace(x-1);
+  else
+    mon_backtrace(0, 0, 0);
+  cprintf("leaving test_backtrace %d\n", x);
+}
+#endif
+
+
+
 // Bootstrap processor starts running C code here.
 // Allocate a real stack and switch to it, first
 // doing some setup required for memory allocator to work.
@@ -61,6 +78,9 @@ mpmain(void)
   idtinit();       // load idt register
   xchg(&cpu->started, 1); // tell startothers() we're up
 #if LAB == 1
+// Test the stack back trace
+  test_backtrace(5);
+
   while (1)
     monitor(0);
 #else

@@ -2,6 +2,8 @@
 // Input is from the keyboard or serial port.
 // Output is written to the screen and serial port.
 
+#include "stdio.h"
+#include "stdarg.h"
 #include "types.h"
 #include "defs.h"
 #include "param.h"
@@ -17,6 +19,7 @@
 int uartgetc(void);
 int kbdgetc(void);
 
+void cputchar(int);
 
 static void consputc(int);
 
@@ -53,6 +56,35 @@ printint(int xx, int base, int sign)
 }
 //PAGEBREAK: 50
 
+static void
+putch(int ch, int *cnt)
+{
+  cputchar(ch);
+  *cnt++;
+}
+
+int
+vcprintf(const char *fmt, va_list ap)
+{
+  int cnt = 0;
+
+  vprintfmt((void*)putch, &cnt, fmt, ap);
+  return cnt;
+}
+
+int
+cprintf(const char *fmt, ...)
+{
+  va_list ap;
+  int cnt;
+
+  va_start(ap, fmt);
+  cnt = vcprintf(fmt, ap);
+  va_end(ap);
+
+  return cnt;
+}
+/*
 // Print to the console. only understands %d, %x, %p, %s.
 void
 cprintf(char *fmt, ...)
@@ -105,7 +137,7 @@ cprintf(char *fmt, ...)
   if(locking)
     release(&cons.lock);
 }
-
+*/
 void
 panic(char *s)
 {
@@ -202,14 +234,17 @@ cons_getc(void)
   // (e.g., when called from the kernel monitor).
   consoleintr(uartgetc);
   consoleintr(kbdgetc);
+  acquire(&cons.lock);
 
   // grab the next character from the input buffer.
   if (input.r != input.w) {
     c = input.buf[input.r++];
     if (input.r == INPUT_BUF)
       input.r = 0;
+    release(&cons.lock);
     return c;
   }
+  release(&cons.lock);
   return 0;
 }
 

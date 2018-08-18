@@ -1,7 +1,4 @@
-typedef unsigned int   uint;
-typedef unsigned short ushort;
-typedef unsigned char  uchar;
-typedef uint pde_t;
+#include "custom_types.h"
 
 // Explicitly-sized versions of integer types
 typedef __signed char int8_t;

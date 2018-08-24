@@ -14,6 +14,8 @@ static void mpmain(void)  __attribute__((noreturn));
 extern pde_t *kpgdir;
 extern char end[]; // first address after kernel loaded from ELF file
 
+#if LAB >= 2    // ...then leave this code out.
+#elif LAB >= 1
 // Test the stack backtrace function (lab 1 only)
 void
 test_backtrace(int x)
@@ -25,7 +27,7 @@ test_backtrace(int x)
     mon_backtrace(0, 0, 0);
   cprintf("leaving test_backtrace %d\n", x);
 }
-
+#endif
 
 
 // Bootstrap processor starts running C code here.

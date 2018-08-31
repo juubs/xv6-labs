@@ -195,4 +195,35 @@ breakpoint(void)
   __asm __volatile("int3");
 }
 
+static __inline uint32_t
+read_eflags(void)
+{
+  uint32_t eflags;
+  __asm __volatile("pushfl; popl %0" : "=r" (eflags));
 
+  return eflags;
+}
+
+static __inline void
+write_eflags(uint32_t eflags)
+{
+  __asm __volatile("pushl %0; popfl" : : "r" (eflags));
+}
+
+static __inline uint32_t
+read_ebp(void)
+{
+  uint32_t ebp;
+  __asm __volatile("movl %%ebp,%0" : "=r" (ebp));
+
+  return ebp;
+}
+
+static __inline uint32_t
+read_esp(void)
+{
+  uint32_t esp;
+  __asm __volatile("movl %%esp,%0" : "=r" (esp));
+
+  return esp;
+}

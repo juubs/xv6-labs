@@ -49,6 +49,13 @@ uartinit(void)
 }
 
 void
+uartprintcstr(char * p)
+{
+	for(; *p; p++)
+		uartputc(*p);
+}
+
+void
 uartputc(int c)
 {
   int i;

@@ -38,6 +38,10 @@ main(void)
 {
   kinit1(end, P2V(4*1024*1024)); // phys page allocator
   kvmalloc();      // kernel page table
+  uartinit();      // serial port
+
+	char * p = "test\n";
+	uartprintcstr(p);
   mpinit();        // detect other processors
   lapicinit();     // interrupt controller
   seginit();       // segment descriptors
@@ -45,7 +49,6 @@ main(void)
   picinit();       // another interrupt controller
   ioapicinit();    // another interrupt controller
   consoleinit();   // console hardware
-  uartinit();      // serial port
 
   cprintf("6828 decimal is %o octal!\n", 6828);
   

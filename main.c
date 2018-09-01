@@ -7,7 +7,7 @@
 #include "x86.h"
 #include "monitor.h"
 
-#define LAB 1
+#define LAB 2
 
 static void startothers(void);
 static void mpmain(void)  __attribute__((noreturn));
@@ -40,8 +40,6 @@ main(void)
   kvmalloc();      // kernel page table
   uartinit();      // serial port
 
-	char * p = "test\n";
-	uartprintcstr(p);
   mpinit();        // detect other processors
   lapicinit();     // interrupt controller
   seginit();       // segment descriptors

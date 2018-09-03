@@ -65,7 +65,7 @@ kfree(char *v)
     panic("kfree");
 
   // Fill with junk to catch dangling refs.
-  memset(v, 1, PGSIZE);
+  //memset(v, 1, PGSIZE); //Commented out for the lab2 exercise
 
   if(kmem.use_lock)
     acquire(&kmem.lock);

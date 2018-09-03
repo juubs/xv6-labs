@@ -29,6 +29,63 @@ test_backtrace(int x)
 }
 #endif
 
+int
+test_page_free_list()
+{
+	//Check the page free list is not corrupted
+
+
+	//Check that the pages that should not be free are not on the list of free pages
+
+
+	//Assert that the first part of physical memory have been mapped to free pages
+
+	return 0; //Success
+
+}
+
+int
+test_page_free_list_ext()
+{
+	int success = test_page_free_list();
+	if(!success)
+		return 0;
+
+	//Assert all unused physical memory have been mapped to free pages
+	return 0;
+}
+
+int
+test_page_alloc()
+{
+	//Count the number of free pages
+
+	//Allocate a few pages with kalloc
+
+	//Assert all pages are different
+
+	//Assert that the physical addresses are within expected bounds
+
+	//Disable the freelist by saving it to a temporary variable and set freelist to null
+
+	//Assert kalloc returns 0 (null)
+
+	//Free pages allocated in second commment
+
+	//Reallocate pages, assert they are reallocated in reverse order
+
+	//Assert that once all pages are reallocated, kalloc again returns 0
+
+	//Set one page to known junk values
+
+	//Free the page, reallocate it.  Assert that the page is the same one with the same junk values.
+
+	//Restore the page free list saved to the temporary variable in fifth step.  Free the pages allocated in this test.
+
+	//Assert the number of free pages is the same as in the beginning.
+
+	return 0;
+}
 
 // Bootstrap processor starts running C code here.
 // Allocate a real stack and switch to it, first
@@ -39,6 +96,12 @@ main(void)
   kinit1(end, P2V(4*1024*1024)); // phys page allocator
   kvmalloc();      // kernel page table
   uartinit();      // serial port
+	int success = test_page_free_list();
+	if(!success)
+		uartprintcstr("Test_page_free_list failed!\n");
+	else
+		uartprintcstr("Test_page_free_list succeeded!\n");
+
 
   mpinit();        // detect other processors
   lapicinit();     // interrupt controller
@@ -59,6 +122,19 @@ main(void)
     timerinit();   // uniprocessor timer
   startothers();   // start other processors
   kinit2(P2V(4*1024*1024), P2V(PHYSTOP)); // must come after startothers()
+
+	success = test_page_free_list_ext();
+	if(!success)
+		uartprintcstr("Test_page_free_list_ext failed!\n");
+	else
+		uartprintcstr("Test_page_free_list_ext failed!\n");
+
+	success = test_page_alloc();
+	if(!success)
+		uartprintcstr("Test_page_alloc failed!\n");
+	else
+		uartprintcstr("Test_page_alloc succeeded!\n");
+
   userinit();      // first user process
   mpmain();        // finish this processor's setup
 }

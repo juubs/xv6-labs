@@ -152,7 +152,7 @@ main(void)
   kvmalloc();      // kernel page table
   uartinit();      // serial port
 	int success = test_page_free_list();
-	success ? uartprintcstr("Test_page_free_list failed!\n") : uartprintcstr("Test_page_free_list succeeded!\n");
+	success ? uartprintcstr("Test_page_free_list succeeded!\n") : uartprintcstr("Test_page_free_list failed!\n");
 
   mpinit();        // detect other processors
   lapicinit();     // interrupt controller
@@ -176,10 +176,10 @@ main(void)
   kinit2(P2V(4*1024*1024), P2V(PHYSTOP)); // must come after startothers()
 
 	success = test_page_free_list_ext();
-	success ? uartprintcstr("Test_page_free_list_ext failed!\n") : uartprintcstr("Test_page_free_list_ext failed!\n");
+	success ? uartprintcstr("Test_page_free_list_ext succeded!\n") : uartprintcstr("Test_page_free_list_ext failed!\n");
 
 	success = test_page_alloc();
-	success ? uartprintcstr("Test_page_alloc failed!\n") : uartprintcstr("Test_page_alloc succeeded!\n");
+	success ? uartprintcstr("Test_page_alloc succeeded!\n") : uartprintcstr("Test_page_alloc failed!\n");
 
 	success = test_page();
 	success ? uartprintcstr("Test_page succeeded!\n") : uartprintcstr("Test_page failed!\n");

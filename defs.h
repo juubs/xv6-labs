@@ -8,6 +8,7 @@ struct rtcdate;
 struct spinlock;
 struct stat;
 struct superblock;
+struct page_info;
 
 // bio.c
 void            binit(void);
@@ -64,10 +65,13 @@ extern uchar    ioapicid;
 void            ioapicinit(void);
 
 // kalloc.c
-char*           kalloc(void);
-void            kfree(char*);
-void            kinit1(void*, void*);
-void            kinit2(void*, void*);
+int 									kinsert(pde_t *pgdir, struct page_info *pp, char *va, int perm);
+void 									kremove(pde_t *pgdir, void *va);
+struct page_info * 		klookup(pde_t *pgdir, void *va, pte_t **pte_store);
+char*           			kalloc(void);
+void            			kfree(char*);
+void            			kinit1(void*, void*);
+void            			kinit2(void*, void*);
 
 // kbd.c
 void            kbdintr(void);
@@ -162,6 +166,7 @@ void            uartputc(int);
 void						uartprintcstr(char*);
 
 // vm.c
+void 						tlb_invalidate(pde_t *pgdir, void *va);
 void            seginit(void);
 void            kvmalloc(void);
 pde_t*          setupkvm(void);

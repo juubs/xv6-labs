@@ -10,6 +10,13 @@
 extern char data[];  // defined by kernel.ld
 pde_t *kpgdir;  // for use in scheduler()
 
+void
+tlb_invalidate(pde_t *pgdir, void *va)
+{
+
+
+}
+
 // Set up CPU's kernel segment descriptors.
 // Run once on entry on each CPU.
 void

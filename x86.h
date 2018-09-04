@@ -2,6 +2,12 @@
 
 // Routines to let C code use special x86 instructions.
 
+static __inline void
+invlpg(void *addr)
+{
+	__asm __volatile("invlpg (%0)" : : "r" (addr) : "memory");
+}
+
 static inline uchar
 inb(ushort port)
 {

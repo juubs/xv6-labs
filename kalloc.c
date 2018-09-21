@@ -23,7 +23,19 @@ struct {
 } kmem;
 
 struct page_info {
+    char *v;
+    int ref_count;
+    int flags;
+    struct page_info *next;
 };
+
+struct page_info ppage_info[1024];
+
+void
+kdecref(struct page_info *p) {
+    if(--(p->ref_count) == 0)
+        kfree(p->v);
+}
 
 int
 kinsert(pde_t *pgdir, struct page_info *pp, char *va, int perm)
@@ -117,4 +129,3 @@ kalloc(void)
     release(&kmem.lock);
   return (char*)r;
 }
-

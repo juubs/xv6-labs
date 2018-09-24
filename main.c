@@ -7,7 +7,7 @@
 #include "x86.h"
 #include "monitor.h"
 
-#define LAB 2
+#define LAB 3
 
 static void startothers(void);
 static void mpmain(void)  __attribute__((noreturn));
@@ -29,118 +29,6 @@ test_backtrace(int x)
 }
 #endif
 
-int
-test_page_free_list()
-{
-	//Check the page free list is not corrupted
-
-
-	//Check that the pages that should not be free are not on the list of free pages
-
-
-	//Assert that the first part of physical memory have been mapped to free pages
-
-	return 0; //Success
-
-}
-
-int
-test_page_free_list_ext()
-{
-	int success = test_page_free_list();
-	if(!success)
-		return 0;
-
-	//Assert all unused physical memory have been mapped to free pages
-	return 0;
-}
-
-int
-test_page_alloc()
-{
-	//Count the number of free pages
-
-	//Allocate a few pages with kalloc
-
-	//Assert all pages are different
-
-	//Assert that the physical addresses are within expected bounds
-
-	//Disable the freelist by saving it to a temporary variable and set freelist to null
-
-	//Assert kalloc returns 0 (null)
-
-	//Free pages allocated in second commment
-
-	//Reallocate pages, assert they are reallocated in reverse order
-
-	//Assert that once all pages are reallocated, kalloc again returns 0
-
-	//Set one page to known junk values
-
-	//Free the page, reallocate it.  Assert that the page is the same one with the same junk values.
-
-	//Restore the page free list saved to the temporary variable in fifth step.  Free the pages allocated in this test.
-
-	//Assert the number of free pages is the same as in the beginning.
-
-	return 0;
-}
-
-int
-test_page()
-{
-	//Allocate a few pages p1, p2, p3
-
-	//Assert that they are all non-zero and different from one another
-
-	//Save the free page list to a temporary variable.  Set free page list to zero.
-
-	//Assert that kookup(0x0) == 0
-
-	//Assert that you can not allocate a page table with kinsert
-
-	//Free page p1, kinsert the physical page p2 at 0x0. Assert the operation succeeded.
-
-	//Assert that p1 is the page table from the previous step.  Assert p2 is in that page table.
-
-	//Asset that p1 and p2 have a ref count of 1.
-
-	//Kinsert p3 at 0x1000.
-
-	//Assert that p3 is also in the page table stored at p1.  Assert p3 has a ref count of 1.
-
-	//Reinsert p3 at 0x1000.
-
-	//Assert that p3 is still in the page table stored at p1.  Assert p3 still has a reference count of 1.
-
-	//Assert you can no longer allocate any more pages.
-
-	//Change the permissions on the pages with kinsert. Assert permissions were changed correctly.
-
-	//Do a remap with fewer permissions on the pages with kinsert.  Assert permissions were changed correctly.
-
-	//Try to remap at a place where kinsert will fail because it will need to allocate another page table.  
-
-	//Insert a different page, e.g. p2 at 0x1000.
-
-	//Check that physical page p2 is mapped in two places and verify that the reference count for p2 is 2 and for p3 is 0
-
-	//Assert that kalloc returns p3.
-
-	//kremove the reference to p2 at 0x0. Assert p2 is still mapped at 0x1000.
-
-	//Assert that the reference count to p2 has been decremented to 1.
-
-	//Reinsert p2 at 0x1000 and assert that the reference count is still 1.
-
-	//Remove the mapping of p2, verify that it is freed.  Assert that when you kallocate you get it back.
-
-	//Free the pages and restore the free list.
-
-	return 0;
-}
-
 
 // Bootstrap processor starts running C code here.
 // Allocate a real stack and switch to it, first
@@ -150,9 +38,6 @@ main(void)
 {
   kinit1(end, P2V(4*1024*1024)); // phys page allocator
   kvmalloc();      // kernel page table
-  uartinit();      // serial port
-	int success = test_page_free_list();
-	success ? uartprintcstr("Test_page_free_list succeeded!\n") : uartprintcstr("Test_page_free_list failed!\n");
 
   mpinit();        // detect other processors
   lapicinit();     // interrupt controller
@@ -161,7 +46,7 @@ main(void)
   picinit();       // another interrupt controller
   ioapicinit();    // another interrupt controller
   consoleinit();   // console hardware
-  uartinit();      // serial port (Have to call it twice to get interrupt output)
+  uartinit();      // serial port
 
   cprintf("6828 decimal is %o octal!\n", 6828);
   
@@ -174,15 +59,6 @@ main(void)
     timerinit();   // uniprocessor timer
   startothers();   // start other processors
   kinit2(P2V(4*1024*1024), P2V(PHYSTOP)); // must come after startothers()
-
-	success = test_page_free_list_ext();
-	success ? uartprintcstr("Test_page_free_list_ext succeded!\n") : uartprintcstr("Test_page_free_list_ext failed!\n");
-
-	success = test_page_alloc();
-	success ? uartprintcstr("Test_page_alloc succeeded!\n") : uartprintcstr("Test_page_alloc failed!\n");
-
-	success = test_page();
-	success ? uartprintcstr("Test_page succeeded!\n") : uartprintcstr("Test_page failed!\n");
 
   userinit();      // first user process
   mpmain();        // finish this processor's setup

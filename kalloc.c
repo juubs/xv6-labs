@@ -22,29 +22,6 @@ struct {
   struct run *freelist;
 } kmem;
 
-struct page_info {
-};
-
-int
-kinsert(pde_t *pgdir, struct page_info *pp, char *va, int perm)
-{
-
-	return 0; //Placeholder so the empty function will compile
-}
-
-void
-kremove(pde_t *pgdir, void *va)
-{
-
-}
-
-struct page_info *
-klookup(pde_t *pgdir, void *va, pte_t **pte_store)
-{
-
-	return 0;
-}
-
 
 // Initialization happens in two phases.
 // 1. main() calls kinit1() while still using entrypgdir to place just

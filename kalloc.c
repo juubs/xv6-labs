@@ -24,9 +24,26 @@ struct {
   struct run *freelist;
 } kmem;
 
+<<<<<<< HEAD
 struct run **free_ptr;
 
 struct page_info phys_page_info[PHYSPAGES];
+
+void
+kdecref(struct page_info *p) {
+    if(--(p->ref_count) == 0)
+        kfree(p->v);
+}
+=======
+struct page_info {
+    char *v;
+    int ref_count;
+    int flags;
+    struct page_info *next;
+};
+>>>>>>> af61a49c22a93a1f384294dc8138f5f3702f4594
+
+struct page_info ppage_info[1024];
 
 void
 kdecref(struct page_info *p) {
@@ -173,4 +190,3 @@ kalloc(void)
   phys_page_info[V2P((char*)r) >> 12].next = NULL;
   return (char*)r;
 }
-

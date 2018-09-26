@@ -72,9 +72,13 @@ extern uchar    ioapicid;
 void            ioapicinit(void);
 
 // kalloc.c
+<<<<<<< HEAD
 extern struct run **free_ptr;
 extern struct page_info phys_page_info[];
 extern int          free_page_count;
+=======
+extern struct       page_info ppage_info[];
+>>>>>>> af61a49c22a93a1f384294dc8138f5f3702f4594
 void                kdecref(struct page_info *p);
 int 			    kinsert(pde_t *pgdir, struct page_info *pp, char *va, int perm);
 void 			    kremove(pde_t *pgdir, void *va);
@@ -82,7 +86,11 @@ struct page_info * 	klookup(pde_t *pgdir, void *va, pte_t **pte_store);
 char*               kalloc(void);
 void                kfree(char*);
 void                kinit1(void*, void*);
+<<<<<<< HEAD
 void                kinit2(void*, void*);
+=======
+void            kinit2(void*, void*);
+>>>>>>> af61a49c22a93a1f384294dc8138f5f3702f4594
 
 // kbd.c
 void            kbdintr(void);

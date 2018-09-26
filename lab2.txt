@@ -1,0 +1,13 @@
+1. x should be (char *)
+
+Exercise 1
+0. Only 4 of these entries are filled out. The given one for the 4MB of initial physical memory, and then all of the kernel not free space for IO, extra devices, and kernel r/o data.
+
+1. Virtual addresses protect the kernel memory and do not let the user access the portions of memory the kernel cares about by never letting a user given virtual address map to a critical physical location.
+
+2. 4 GB
+
+3. 2 ^ 22 (4 GB) / 2 ^ 10 (4MB) = # of pages
+# of pages * metadata for each page = total overhead
+
+4.

@@ -8,9 +8,11 @@
 #include "memlayout.h"
 #include "mmu.h"
 #include "spinlock.h"
+#define NULL 0
 
 void freerange(void *vstart, void *vend);
 extern char end[]; // first address after kernel loaded from ELF file
+int free_page_count;
 
 struct run {
   struct run *next;
@@ -22,8 +24,15 @@ struct {
   struct run *freelist;
 } kmem;
 
-struct page_info {
-};
+struct run **free_ptr;
+
+struct page_info phys_page_info[PHYSPAGES];
+
+void
+kdecref(struct page_info *p) {
+    if(--(p->ref_count) == 0)
+        kfree(p->v);
+}
 
 int
 kinsert(pde_t *pgdir, struct page_info *pp, char *va, int perm)
@@ -54,9 +63,40 @@ klookup(pde_t *pgdir, void *va, pte_t **pte_store)
 void
 kinit1(void *vstart, void *vend)
 {
+  free_page_count = 0;
   initlock(&kmem.lock, "kmem");
   kmem.use_lock = 0;
   freerange(vstart, vend);
+
+  free_ptr = &kmem.freelist;
+  //i/o space
+  for(uint i=0; i<EXTMEM; i+=PGSIZE) {
+    struct page_info p_info;
+    p_info.v = P2V(i);
+    p_info.ref_count = 1;
+    p_info.used = 1;
+    p_info.next = NULL;
+    phys_page_info[i >> 12] = p_info;
+  }
+  //more devices
+  for(uint i=DEVSPACE; i<0; i+=PGSIZE) {
+    struct page_info p_info;
+    p_info.v = P2V(i);
+    p_info.ref_count = 1;
+    p_info.used = 1;
+    p_info.next = NULL;
+    phys_page_info[i >> 12] = p_info;
+  }
+  //kernel instr and r/o data
+  for(uint i=V2P(KERNLINK); i<V2P(end); i+=PGSIZE) {
+    struct page_info p_info;
+    p_info.v = P2V(i);
+    p_info.ref_count = 1;
+    p_info.used = 1;
+    p_info.next = NULL;
+    phys_page_info[i >> 12] = p_info;
+  }
+
 }
 
 void
@@ -69,10 +109,20 @@ kinit2(void *vstart, void *vend)
 void
 freerange(void *vstart, void *vend)
 {
-  char *p;
-  p = (char*)PGROUNDUP((uint)vstart);
-  for(; p + PGSIZE <= (char*)vend; p += PGSIZE)
+  char *p = (char*)PGROUNDUP((uint)vstart);
+  struct page_info *p_info_next = NULL;
+  for(; p + PGSIZE <= (char*)vend; p += PGSIZE) {
     kfree(p);
+
+    struct page_info p_info;
+    p_info.v = p;
+    p_info.ref_count = 0;
+    p_info.used = 0;
+    p_info.next = p_info_next;
+    phys_page_info[V2P(p) >> 12] = p_info;
+    p_info_next = &phys_page_info[V2P(p) >> 12];
+    free_page_count++;
+  }
 }
 
 //PAGEBREAK: 21
@@ -98,6 +148,10 @@ kfree(char *v)
   kmem.freelist = r;
   if(kmem.use_lock)
     release(&kmem.lock);
+
+  phys_page_info[V2P(v) >> 12].v = v;
+  phys_page_info[V2P(v) >> 12].used = 0;
+  phys_page_info[V2P(v) >> 12].next = &phys_page_info[V2P(r->next)];
 }
 
 // Allocate one 4096-byte page of physical memory.
@@ -115,6 +169,8 @@ kalloc(void)
     kmem.freelist = r->next;
   if(kmem.use_lock)
     release(&kmem.lock);
+  phys_page_info[V2P((char*)r) >> 12].used = 1;
+  phys_page_info[V2P((char*)r) >> 12].next = NULL;
   return (char*)r;
 }
 

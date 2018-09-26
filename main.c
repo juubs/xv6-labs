@@ -8,10 +8,12 @@
 #include "monitor.h"
 
 #define LAB 2
+#define NULL 0
 
 static void startothers(void);
 static void mpmain(void)  __attribute__((noreturn));
 extern pde_t *kpgdir;
+extern struct run *freelist;
 extern char end[]; // first address after kernel loaded from ELF file
 
 #if LAB >= 2    // ...then leave this code out.
@@ -33,15 +35,29 @@ int
 test_page_free_list()
 {
 	//Check the page free list is not corrupted
-
+    struct page_info *pp;
+    for(char *v = (char*)end; v <= (char*)P2V(4*1024*1024); v += PGSIZE) {
+        pp = &phys_page_info[V2P(v) >> 12];
+        //cprintf("%02x\n", pp->v);
+    }
 
 	//Check that the pages that should not be free are not on the list of free pages
+    for(uint p = 0; p < EXTMEM; p += PGSIZE) {
+        if (phys_page_info[p >> 12].used == 0) {
+            cprintf("Forbidden space not set properly.\n");
+            return 0; 
+        }
+    }
+	
+    //Assert that the first part of physical memory have been mapped to free pages
+    for(char *p = (char*)end; p < (char*)(4*1024*1024); p += PGSIZE) {
+        if (phys_page_info[(uint)p >> 12].used != 0) {
+            cprintf("Pages not freed properly.\n");
+            return 0; 
+        }
+    }
 
-
-	//Assert that the first part of physical memory have been mapped to free pages
-
-	return 0; //Success
-
+	return 1; //Success
 }
 
 int
@@ -59,32 +75,83 @@ int
 test_page_alloc()
 {
 	//Count the number of free pages
-
+    int free_page_count = 0;
+    for(uint p=0; p<PHYSTOP; p+=PGSIZE) {
+        if (!phys_page_info[p >> 12].used) free_page_count++;
+    }
+    cprintf("%d free pages\n", free_page_count);
+        
 	//Allocate a few pages with kalloc
+    char *p1 = kalloc();
+    char *p2 = kalloc();
+    char *p3 = kalloc();
+    cprintf("Virtual addresses from kalloc:\np1: 0x%08x\np2: 0x%08x\np3: 0x%08x\n", p1, p2, p3);
 
 	//Assert all pages are different
+    if (p1 == p2 || p2 == p3 || p1 == p3) return 0;
 
 	//Assert that the physical addresses are within expected bounds
+    cprintf("Physical addresses of p1-p3:\np1: 0x%08x\np2: 0x%08x\np3: 0x%08x\n", V2P(p1), V2P(p2), V2P(p3));
 
 	//Disable the freelist by saving it to a temporary variable and set freelist to null
+    //struct run **temp_free = free_ptr;
+    uint fp = (uint)*free_ptr;
+    cprintf("Freelist before disable:\ntemp: 0x%08x\nreal: 0x%08x\n", fp, *free_ptr);
+    *free_ptr = NULL;
+    
+    free_page_count = 0;
+    for(uint p=0; p<PHYSTOP; p+=PGSIZE) {
+        if (!phys_page_info[p >> 12].used) free_page_count++;
+    }
+    cprintf("%d free pages\n", free_page_count);
 
 	//Assert kalloc returns 0 (null)
+    char *p4 = kalloc();
+    cprintf("freelist disabled\np4: 0x%08x\n", p4);
 
 	//Free pages allocated in second commment
+    kfree(p1);
+    kfree(p2);
+    kfree(p3);
+    cprintf("freed p1-p3\n");
 
 	//Reallocate pages, assert they are reallocated in reverse order
+    p1 = kalloc();
+    p2 = kalloc();
+    p3 = kalloc();
+    cprintf("Re-kalloc'd p1-p3:\np1: 0x%08x\np2: 0x%08x\np3: 0x%08x\n", p1, p2, p3);
 
 	//Assert that once all pages are reallocated, kalloc again returns 0
+    char *p5 = kalloc();
+    cprintf("New kalloc\np5: 0x%08x\n", p5);
 
 	//Set one page to known junk values
+    *p1 = (char)7234432772459894985;
+    cprintf("junk: %d\n", *p1);
 
 	//Free the page, reallocate it.  Assert that the page is the same one with the same junk values.
+    kfree(p1);
+    cprintf("freed junk\n");
+    p1 = kalloc();
+    cprintf("p1 realloc'd: 0x%08x\n", p1);
+    cprintf("realloced junk: %d\n", *p1);
 
 	//Restore the page free list saved to the temporary variable in fifth step.  Free the pages allocated in this test.
+    *free_ptr = (struct run *)fp;
+    cprintf("Temp freelist: 0x%08x\n", fp);
+    cprintf("Restored freelist: 0x%08x\n", *free_ptr);
+    kfree(p1);
+    kfree(p2);
+    kfree(p3);
+	
+    //Assert the number of free pages is the same as in the beginning.
+    free_page_count = 0;
+    for(uint p=0; p<PHYSTOP; p+=PGSIZE) {
+        if (!phys_page_info[p >> 12].used) free_page_count++;
+    }
+    cprintf("%d free pages\n", free_page_count);
 
-	//Assert the number of free pages is the same as in the beginning.
-
-	return 0;
+	return 1;
 }
 
 int

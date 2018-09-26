@@ -1,3 +1,5 @@
+#define PHYSPAGES ((1<<17)-1)
+
 struct buf;
 struct context;
 struct file;
@@ -8,7 +10,12 @@ struct rtcdate;
 struct spinlock;
 struct stat;
 struct superblock;
-struct page_info;
+struct page_info {
+    char *v;
+    struct page_info *next;
+    int ref_count;
+    int used;
+};
 
 // bio.c
 void            binit(void);
@@ -65,13 +72,17 @@ extern uchar    ioapicid;
 void            ioapicinit(void);
 
 // kalloc.c
-int 									kinsert(pde_t *pgdir, struct page_info *pp, char *va, int perm);
-void 									kremove(pde_t *pgdir, void *va);
-struct page_info * 		klookup(pde_t *pgdir, void *va, pte_t **pte_store);
-char*           			kalloc(void);
-void            			kfree(char*);
-void            			kinit1(void*, void*);
-void            			kinit2(void*, void*);
+extern struct run **free_ptr;
+extern struct page_info phys_page_info[];
+extern int          free_page_count;
+void                kdecref(struct page_info *p);
+int 			    kinsert(pde_t *pgdir, struct page_info *pp, char *va, int perm);
+void 			    kremove(pde_t *pgdir, void *va);
+struct page_info * 	klookup(pde_t *pgdir, void *va, pte_t **pte_store);
+char*               kalloc(void);
+void                kfree(char*);
+void                kinit1(void*, void*);
+void                kinit2(void*, void*);
 
 // kbd.c
 void            kbdintr(void);

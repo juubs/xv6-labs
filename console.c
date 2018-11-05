@@ -299,7 +299,7 @@ consolewriteable(struct inode* ip)
 /**
  * Indicates if the console can be read without blocking.
  * @param {struct inode *} ip - the inode to be checked
- * @return 0 for true, >0 for false, -1 for error.
+ * @return 1 for true, 0 for false, -1 for error.
  */
 int
 consolereadable(struct inode* ip)

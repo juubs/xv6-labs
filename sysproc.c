@@ -8,6 +8,20 @@
 #include "proc.h"
 
 int
+sys_setscheduler(void)
+{
+  int policy;
+  int priority;
+
+  if (argint(0, &policy) < 0)
+    return -1;
+  if (argint(1, &priority) < 0)
+    return -1;
+  setscheduler(policy, priority);
+  return 0;
+}
+
+int
 sys_fork(void)
 {
   return fork();

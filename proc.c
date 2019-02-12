@@ -6,6 +6,7 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
+#include "sched.h"
 
 struct {
   struct spinlock lock;
@@ -104,8 +105,6 @@ userinit(void)
   release(&ptable.lock);
 }
 
-// Grow current process's memory by n bytes.
-// Return 0 on success, -1 on failure.
 int
 growproc(int n)
 {
@@ -260,6 +259,31 @@ wait(void)
   }
 }
 
+int
+setscheduler(int policy, int priority)
+{
+  proc->schedpolicy_lab3 = policy;
+  proc->priority_lab3 = priority;
+
+  // preempt if fifo proc
+  if (policy == SCHED_FIFO) 
+    yield();
+
+  return 0;
+}
+
+void
+run_proc(struct proc *p)
+{
+  proc = p;
+  switchuvm(p);
+  p->state = RUNNING;
+  swtch(&cpu->scheduler, p->context);
+  switchkvm();
+
+  proc = 0;
+}
+
 //PAGEBREAK: 42
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
@@ -272,32 +296,61 @@ void
 scheduler(void)
 {
   struct proc *p;
+  struct proc *high_p;
 
-  for(;;){
+  for(;;) {
     // Enable interrupts on this processor.
     sti();
-
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
+
+    int fifo_found = 0;
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+      if (p->state != RUNNABLE || p->schedpolicy_lab3 != SCHED_FIFO)
         continue;
-
-      // Switch to chosen process.  It is the process's job
-      // to release ptable.lock and then reacquire it
-      // before jumping back to us.
-      proc = p;
-      switchuvm(p);
-      p->state = RUNNING;
-      swtch(&cpu->scheduler, p->context);
-      switchkvm();
-
-      // Process is done running for now.
-      // It should have changed its p->state before coming back.
-      proc = 0;
+      
+      // find highest priority fifo proc 
+      if (fifo_found == 0) {
+        // first one found so just set as highest priority and set flag
+        high_p = p;
+        fifo_found = 1;
+      } else {
+        if (p->priority_lab3 > high_p->priority_lab3)
+          high_p = p;
+      }
     }
-    release(&ptable.lock);
 
+    if (fifo_found == 0) {
+      // run rr if no fifo procs
+
+      // find highest priority among active procs
+      int high_priority = 0;
+      for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+        if (p->state != RUNNABLE)
+          continue;
+
+        if (p->priority_lab3 > high_priority)
+          high_priority = p->priority_lab3;
+      }
+      // find ready procs with that priority
+      for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+        if (p->state != RUNNABLE)
+          continue;
+        
+        // break if higher priority or fifo proc has been added to ptable
+        if (p->priority_lab3 > high_priority || p->schedpolicy_lab3 == SCHED_FIFO)
+          break;
+        
+        // found a proc with highest priority among runnable procs 
+        if (p->priority_lab3 == high_priority)
+          run_proc(p);
+      }
+    } else {
+      // run the fifo proc
+      run_proc(high_p);
+    }
+
+    release(&ptable.lock);
   }
 }
 

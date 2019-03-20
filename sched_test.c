@@ -6,7 +6,9 @@
 void run_child();
 
 int
-main(void) {
+main(void) 
+{
+  printf(1, "%d\n", getcpu());
   // set parent to very high priority to finish forking before running children
   setscheduler(SCHED_FIFO, 99);
 

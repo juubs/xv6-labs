@@ -93,8 +93,27 @@ mythread(void)
 {
   int i;
   printf(1, "my thread running\n");
-  for (i = 0; i < 100; i++) {
-    printf(1, "my thread 0x%x\n", (int) current_thread);
+  for (i = 0; i < 10; i++) {
+    printf(1, "my thread 0x%x on CPU %d\n", (int) current_thread, getcpu());
+    thread_yield();
+  }
+  printf(1, "my thread: exit\n");
+  current_thread->state = FREE;
+  thread_schedule();
+}
+
+static void
+mythread2(void)
+{
+  int i;
+  printf(1, "my thread 2 running\n");
+  for (i = 0; i < 10; i++) {
+    if (i == 5) {
+      printf(1, "thread 0x%x blocking...\n", (int) current_thread);
+      sleep(200);
+      printf(1, "done blocking\n");
+    }
+    printf(1, "my thread 0x%x on CPU %d\n", (int) current_thread, getcpu());
     thread_yield();
   }
   printf(1, "my thread: exit\n");
@@ -103,12 +122,13 @@ mythread(void)
 }
 
 
+
 int 
 main(int argc, char *argv[]) 
 {
   thread_init();
   thread_create(mythread);
-  thread_create(mythread);
+  thread_create(mythread2);
   thread_schedule();
   return 0;
 }

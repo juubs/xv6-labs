@@ -8,6 +8,12 @@
 #include "proc.h"
 
 int
+sys_getcpu(void)
+{
+  return getcpu(); 
+}
+
+int
 sys_setscheduler(void)
 {
   int policy;
@@ -19,6 +25,32 @@ sys_setscheduler(void)
     return -1;
   setscheduler(policy, priority);
   return 0;
+}
+
+int
+sys_clone(void)
+{
+  void *stack, *func, *arg;
+  
+  if (argptr(0, (void*)&stack, sizeof(stack)) < 0)
+    return -1;
+  if (argptr(1, (void*)&func, sizeof(func)) < 0)
+    return -1;
+  if (argptr(2, (void*)&arg, sizeof(arg)) < 0)
+    return -1;
+
+  return clone(stack, func, arg);
+}
+
+int
+sys_join(void)
+{
+  void **stack;
+
+  if (argptr(0, (void*)&stack, sizeof(stack)) < 0)
+    return -1;
+
+  return join(stack);
 }
 
 int

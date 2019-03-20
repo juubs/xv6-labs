@@ -67,6 +67,7 @@ struct proc {
   char name[16];               // Process name (debugging)
   enum schedpolicy_lab3 schedpolicy_lab3;
   int priority_lab3;
+  uint ustack;
 };
 
 // Process memory is laid out contiguously, low addresses first:

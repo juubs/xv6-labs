@@ -121,6 +121,9 @@ int             wait(void);
 void            wakeup(void*);
 void            yield(void);
 int             setscheduler(int, int);
+int             getcpu(void);
+int             clone(void*, void*, void*);
+int             join(void**);
 
 // swtch.S
 void            swtch(struct context**, struct context*);

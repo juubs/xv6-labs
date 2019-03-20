@@ -1,0 +1,8 @@
+A non-benign race for this code could occur on two simultaneous calls to push(). Let's label the following lines of code from push as follows:
+
+  1. e->next = head;
+  2. e->key = key;
+  3. e->value = value;
+  4. head = e;
+
+If two threads execute past line 1 before either gets to line 4, the stack will not be set up properly. Both calls will assign the "next" field to whatever the head was before either execution started, which means both created nodes will have their next pointed to the same node. This means that when the "head" gets reassigned in line 4, it will then get overwritten by the second thread assigning the other node to head. This could lead to items on the stack essentially not getting put onto the stack.

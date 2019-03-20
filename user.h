@@ -1,6 +1,10 @@
 struct stat;
 struct rtcdate;
 
+struct lock_t {
+  uint locked;
+};
+
 // system calls
 int fork(void);
 int exit(void) __attribute__((noreturn));
@@ -24,6 +28,9 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int setscheduler(int, int);
+int getcpu(void);
+int clone(void*, void*, void*);
+int join(void**);
 
 // ulib.c
 int stat(char*, struct stat*);
@@ -38,3 +45,6 @@ void* memset(void*, int, uint);
 void* malloc(uint);
 void free(void*);
 int atoi(const char*);
+void initlock_t(struct lock_t* lk);
+void acquire_t(struct lock_t* lk);
+void release_t(struct lock_t* lk);

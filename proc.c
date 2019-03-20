@@ -27,6 +27,14 @@ pinit(void)
   initlock(&ptable.lock, "ptable");
 }
 
+int
+getcpu(void)
+{
+  for (int i=0; i<ncpu; i++)
+    if (&cpus[i] == cpu) return i;
+  return -1;
+}
+
 //PAGEBREAK: 32
 // Look in the process table for an UNUSED proc.
 // If found, change state to EMBRYO and initialize
@@ -171,6 +179,107 @@ fork(void)
   return pid;
 }
 
+// Like fork, but share memory space with parent
+int
+clone(void *stack, void *func, void *arg)
+{
+  int pid;
+  struct proc *np;
+
+  // make sure new stack is page aligned and not smaller than one page
+  if ((uint)stack % PGSIZE != 0 || (proc->sz - (uint)stack) < PGSIZE) {
+    cprintf("pls\n");
+    return -1;
+  }
+
+  acquire(&ptable.lock);
+
+  // Allocate process
+  if ((np = allocproc()) == 0) {
+    cprintf("alloc error\n");
+    release(&ptable.lock);
+    return -1;
+  }
+
+  // using same addr space as proc, not just copying
+  np->pgdir = proc->pgdir;
+
+  // same as fork
+  np->sz = proc->sz;
+  np->parent = proc; 
+  *np->tf = *proc->tf;
+  np->tf->eax = 0;
+
+  // new user stack space
+  np->ustack = (uint)stack;
+
+  // set up new %esp and push given arg 
+  np->tf->esp = (uint)stack + PGSIZE - 4;
+  *((uint*)(np->tf->esp)) = (uint)arg;
+  // push fake return PC
+  np->tf->esp -= 4;
+  *((uint*)(np->tf->esp)) = 0xFFFFFFFF;
+ 
+  // set up new %eip (to return execution to given function)
+  np->tf->eip = (uint)func;
+  // set up new %ebp so stack works right
+  np->tf->ebp = np->tf->esp;
+  
+  // all below from fork
+  for(int i=0; i<NOFILE; i++)
+    if (proc->ofile[i])
+      np->ofile[i] = filedup(proc->ofile[i]);
+  np->cwd = idup(proc->cwd);
+
+  safestrcpy(np->name, proc->name, sizeof(proc->name));
+  pid = np->pid;
+  np->state = RUNNABLE;
+  release(&ptable.lock);
+  return pid;
+}
+
+// Like wait, but for clones instead of forks.
+// Takes in double stack pointer to stick the procs ustack in to free back in userspace.
+int
+join(void **stack)
+{
+  struct proc *p;
+  int pid, thread_flag;
+
+  acquire(&ptable.lock);
+
+  for(;;) {
+    thread_flag = 0;
+
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+      // check that p is both child of proc and shares pgdir (indicating thread of proc)
+      if (p->pgdir != proc->pgdir || p->parent != proc)
+        continue;
+      
+      thread_flag = 1;
+      
+      if (p->state == ZOMBIE) {
+        pid = p->pid;
+        p->state = UNUSED;
+        p->pid = 0;
+        p->parent = 0;
+        p->name[0] = 0;
+        p->killed = 0;
+        *((int*)((int*)stack)) = p->ustack;
+        release(&ptable.lock);
+        return pid;
+      }
+    }
+
+    if (thread_flag == 0 || proc->killed) {
+      release(&ptable.lock);
+      return -1;
+    }
+
+    sleep(proc, &ptable.lock);
+  }  
+}
+
 // Exit the current process.  Does not return.
 // An exited process remains in the zombie state
 // until its parent calls wait() to find out it exited.
@@ -204,9 +313,17 @@ exit(void)
   // Pass abandoned children to init.
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     if(p->parent == proc){
-      p->parent = initproc;
-      if(p->state == ZOMBIE)
-        wakeup1(initproc);
+      // check for threads
+      if (p->pgdir != proc->pgdir) {
+        // no threads, pass children as usual
+        p->parent = initproc;
+        if(p->state == ZOMBIE)
+          wakeup1(initproc);
+      } else {
+        // exiting proc has threads still up
+        p->parent = 0;
+        p->state = ZOMBIE;
+      }
     }
   }
 
@@ -229,8 +346,12 @@ wait(void)
     // Scan through table looking for zombie children.
     havekids = 0;
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->parent != proc)
+      if (p->parent != proc)
         continue;
+      // found a child that is a thread and not done yet
+      if (p->pgdir == proc->pgdir && p->pid != 0)
+        continue;
+
       havekids = 1;
       if(p->state == ZOMBIE){
         // Found one.

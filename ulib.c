@@ -4,6 +4,24 @@
 #include "user.h"
 #include "x86.h"
 
+void
+initlock_t(struct lock_t *lk)
+{
+  lk->locked = 0;
+}
+
+void
+acquire_t(struct lock_t *lk)
+{
+  while (xchg(&lk->locked, 1) != 0) ;
+}
+
+void
+release_t(struct lock_t *lk)
+{
+  xchg(&lk->locked, 0);
+}
+
 char*
 strcpy(char *s, char *t)
 {

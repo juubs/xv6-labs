@@ -72,6 +72,7 @@ thread_test3(void *a)
   acquire_t(lk);
   printf(1, "my thread pid %d running on CPU %d\n", getpid(), getcpu());
   release_t(lk);
+  
   *(int*)a = *(int*)a + 1;
 
   exit();

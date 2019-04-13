@@ -69,13 +69,13 @@ pipeclose(struct pipe *p, int writable)
     p->writeopen = 0;
     // Wake up anything waiting to read
     // Lab 4: Your code here.
-    
+    wakeupselect(&p->selprocread);  
     wakeup(&p->nread);
   } else {
     p->readopen = 0;
     // Wake up anything waiting to write
     // LAB 4: Your code here
-    
+    wakeupselect(&p->selprocwrite); 
     wakeup(&p->nwrite);
   }
   if(p->readopen == 0 && p->writeopen == 0){
@@ -107,7 +107,8 @@ pipewrite(struct pipe *p, char *addr, int n)
   
   // Wake up anything waiting to read
   // LAB 4: Your code here
-  
+  wakeupselect(&p->selprocread);
+
   wakeup(&p->nread);  //DOC: pipewrite-wakeup1
   release(&p->lock);
   return n;
@@ -134,7 +135,8 @@ piperead(struct pipe *p, char *addr, int n)
   
   // Wake up anything waiting to write
   // LAB 4: Your code here
-  
+  wakeupselect(&p->selprocwrite);
+
   wakeup(&p->nwrite);  //DOC: piperead-wakeup
   release(&p->lock);
   return i;
@@ -150,8 +152,9 @@ piperead(struct pipe *p, char *addr, int n)
 int
 pipewriteable(struct pipe *p)
 {
-    // LAB 4: Your code here
-    return 0;
+  if (p->readopen == 0 || proc->killed)
+    return -1;
+  return p->nwrite != p->nread + PIPESIZE;
 }
 
 /* Checks if this pipe is readable or not.
@@ -164,8 +167,9 @@ pipewriteable(struct pipe *p)
 int
 pipereadable(struct pipe *p)
 {
-    // LAB 4: Your code here
-    return 0;
+  if (proc->killed)
+    return -1;
+  return p->nread != p->nwrite || p->writeopen == 0;
 }
 
 /* Sets a wakeup call.
@@ -178,10 +182,14 @@ pipereadable(struct pipe *p)
 int
 pipeselect(struct pipe *p, int * selid, struct spinlock * lk)
 {
-       
-    // LAB 4: Your code here.
-
-    return 0;
+  if ((*selid) == 100) { // add to read
+    if (p->selprocread.selcount < NSELPROC)
+      addselid(&p->selprocread, selid, lk);
+  } else { // add to write
+    if (p->selprocwrite.selcount < NSELPROC)
+      addselid(&p->selprocwrite, selid, lk);
+  }
+  return 0;
 }
 
 /* Clears a wakeup call
@@ -193,8 +201,9 @@ pipeselect(struct pipe *p, int * selid, struct spinlock * lk)
 int
 pipeclrsel(struct pipe *p, int * selid)
 {
-
-    // LAB 4: Your code here.
-
-    return 0;
+  if ((*selid) == 100)
+    clearselid(&p->selprocread, selid);
+  else
+    clearselid(&p->selprocwrite, selid);
+  return 0;
 }

@@ -461,26 +461,70 @@ sys_pipe(void)
 int
 sys_select(void)
 {
-    int nfds;
-    fd_set *readfds, *writefds, retreadfds, retwritefds;
-    FD_ZERO(&retreadfds);
-    FD_ZERO(&retwritefds);
+  int nfds;
+  fd_set *readfds, *writefds, retreadfds, retwritefds;
+  FD_ZERO(&retreadfds);
+  FD_ZERO(&retwritefds);
 
-    if (argint(0, (void*)&nfds) < 0)
-        return -1;
-    if (argptr(1, (void*)&readfds, sizeof(readfds)) < 0)
-        return -1;
-    if (argptr(2, (void*)&writefds, sizeof(writefds)) < 0)
-        return -1;
-    acquire(&proc->selectlock);
+  if (argint(0, (void*)&nfds) < 0)
+    return -1;
+  if (argptr(1, (void*)&readfds, sizeof(readfds)) < 0)
+    return -1;
+  if (argptr(2, (void*)&writefds, sizeof(writefds)) < 0)
+    return -1;
+  acquire(&proc->selectlock);
 
-    // LAB4: Your Code Here
+  int allblocking = 1;
+  while (allblocking) {
+    struct file *f;
+    for(int fd=0; fd<nfds; fd++) {
+      f = proc->ofile[fd];
 
-    *readfds = retreadfds;
-    *writefds = retwritefds;
+      if (FD_ISSET(fd, readfds) && f && filereadable(f)) {
+        allblocking = 0;
+        FD_SET(fd, &retreadfds); 
+      }
+      
+      if (FD_ISSET(fd, writefds) && f && filewriteable(f)) {
+        allblocking = 0;
+        FD_SET(fd, &retwritefds);
+      }
+    }
+    
+    if (allblocking) {
+      cprintf("all fds blocking, sleeping...\n");
+      for(int fd=0; fd<nfds; fd++) {
+        f = proc->ofile[fd];
+        
+        if (FD_ISSET(fd, readfds)) {
+          proc->selid = 100; // read selid
+          fileselect(f, &proc->selid, &proc->selectlock);
+        }
 
-    release(&proc->selectlock);
-    return 0;
+        if (FD_ISSET(fd, writefds)) {
+          proc->selid = 200; // write selid
+          fileselect(f, &proc->selid, &proc->selectlock);
+        }
+      }
+
+      sleep(&proc->selid, &proc->selectlock);
+      cprintf("awake from block\n");
+
+      // clear selid channels
+      for(int fd=0; fd<nfds; fd++) {
+        f = proc->ofile[fd];
+
+        if (FD_ISSET(fd, readfds))
+          fileclrsel(f, &proc->selid);
+        if (FD_ISSET(fd, writefds))
+          fileclrsel(f, &proc->selid);
+      }
+    }
+  }
+
+  *readfds = retreadfds;
+  *writefds = retwritefds;
+  
+  release(&proc->selectlock);
+  return 0;
 }
-
-

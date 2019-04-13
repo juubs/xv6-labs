@@ -221,6 +221,7 @@ consoleintr(int (*getc)(void))
           wakeup(&input.r);
           // Wake up anything waiting on console read
           // LAB 4: Your code here
+          wakeupselect(&devsw[CONSOLE].selprocread);
         }
       }
       break;
@@ -293,7 +294,8 @@ consolewrite(struct inode *ip, char *buf, int n)
 int
 consolewriteable(struct inode* ip)
 {
-    return 0;
+  // always true :)
+  return 1;
 }
 
 /**
@@ -304,10 +306,9 @@ consolewriteable(struct inode* ip)
 int
 consolereadable(struct inode* ip)
 {
-
-  // LAB 4: Your code here
-
-  return 0;
+  if (proc->killed)
+    return -1;
+  return (input.w != input.r);
 }
 
 // Console select
@@ -316,9 +317,8 @@ consolereadable(struct inode* ip)
 int
 consoleselect(struct inode *ip, int *selid, struct spinlock * lk)
 {
-    // LAB 4: Your code here
-    
-    return 0;
+  addselid(&devsw[CONSOLE].selprocread, selid, lk);
+  return 0;
 }
 
 // Console select clear
@@ -327,9 +327,8 @@ consoleselect(struct inode *ip, int *selid, struct spinlock * lk)
 int
 consoleclrsel(struct inode *ip, int *selid)
 {
-    // LAB 4: Your code here
-    
-    return 0;
+  clearselid(&devsw[CONSOLE].selprocread, selid); 
+  return 0;
 }
 void
 consoleinit(void)

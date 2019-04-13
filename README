@@ -1,3 +1,23 @@
+LAB 4 DOCUMENTATION
+
+Implmented the select system call defined in sysfile.c. Along with that are helper functions for file status defined in console.c, pipe.c, file.c, and fs.c, and a testing user programs in selecttest.c and pipenet.c.
+
+My select system call *almost* works 100% as intended. It will pass all of the basic tests in selecttest (except for one exception, only sometimes). Unfortunately, the one bug I can't track down is this: sometimes to wake up a pipe/console FD to read or write requires an ENTER keypress. I've tried adjusting the readable/writeable conditions to see if it was waiting for a keypress when it should've woken up on an empty buffer. I've tried adjusting the select call itself but as far as I can tell I've written it to work. This is noticeable in "selecttest" when it sleeps on test1 - I have a helping print statement that states when all FDs are blocking and it is sleeping until one is available. If it pauses, at that message, pressing ENTER will wake it up and continue the test. Sometimes this doesn't happen because that test does not always have blocking FDs. This is most noticeable with the pipenet implementation. Pipenet works as it should - it won't lock up after the first read and write to and from the shell. However, each buffer output to the console requires an ENTER keypress to continue. Other than that, the select implementation for Pipenet solves the issue presented where the program blocks indefinitely.
+
+Small note for selecttest: The success message for test3p is the "test3p passed!". That is the array of chars initialized in the write buffer in the test that gets read by a pipe with "read(fds[0],rbuf,32)" and written to the console with "write(1,rbuf,32)":. If that message is printed by selecttest, then the message was passed through the pipe and to the console properly.
+
+=========
+
+LAB 4 QUESTIONS
+
+1. Select overwrites the input fd_set. Poll doesn't destroy this input data allowing the same one to be reused. Poll can handle many file handles without workarounds which select struggles with since it uses bitmasks for FD info. Select has to loop over the bitmask on return just to determine which type of event occured (read/write/error) while poll will set the data structure of the FD sets with the kind of event that occured.
+
+2. I don't think this is possible with select. With poll, however, you could keep track of the latest write and then check where it wrote to to verify that it reads it correctly. Given some timeout before resetting the connection this could be implemented with poll. 
+
+3. This should work. You could have pipenet loop over each read/write that it would want to wait for until one of the returns a success to move on. The drawback to this is the constant CPU usage - the entire time this is happening, the process is constantly jumping back and forth through read and writes until one of them works. With select, the process goes to sleep until one of the FDs will not block, leaving the CPU free to work on other processes while the select is blocking.
+
+========
+
 xv6 is a re-implementation of Dennis Ritchie's and Ken Thompson's Unix
 Version 6 (v6).  xv6 loosely follows the structure and style of v6,
 but is implemented for a modern x86-based multiprocessor using ANSI C.

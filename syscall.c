@@ -83,6 +83,7 @@ argstr(int n, char **pp)
 }
 
 extern int sys_chdir(void);
+extern int sys_clone(void);
 extern int sys_close(void);
 extern int sys_dup(void);
 extern int sys_exec(void);
@@ -126,6 +127,7 @@ static int (*syscalls[])(void) = {
 [SYS_link]    sys_link,
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
+[SYS_clone]   sys_clone,
 };
 
 void

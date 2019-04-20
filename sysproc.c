@@ -21,6 +21,13 @@ sys_exit(void)
 }
 
 int
+sys_clone(void)
+{
+
+  return clone(stack, func, arg);
+}
+
+int
 sys_wait(void)
 {
   return wait();

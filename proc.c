@@ -226,24 +226,24 @@ clone(void *stack, void *func, void *arg) {
   int pid;
   struct proc *pproc;
 
-  if ((uint)stack % PGSIZE != 0 || (proc->sz - (uint)stack) < PGSIZE) {
+  if ((uint)stack % PGSIZE != 0 || (myproc()->sz - (uint)stack) < PGSIZE) {
     cprintf("new stack creation error\n");
     return -1;
   }
 
   acquire(&ptable.lock);
 
-  if ((proc = allocproc()) == 0) {
+  if ((pproc = allocproc()) == 0) {
     cprintf("alloc error\n");
     release(&ptable.lock);
     return -1;
   }
 
-  pproc->pgdir = proc->pgdir;
+  pproc->pgdir = myproc()->pgdir;
 
-  pproc->sz = proc->sz;
-  pproc->parent = np->parent;
-  *pproc->tf = *proc->tf;
+  pproc->sz = myproc()->sz;
+  pproc->parent = myproc()->parent;
+  *pproc->tf = *myproc()->tf;
   pproc->tf->eax = 0;
 
   pproc->ustack = (uint)stack;
@@ -257,12 +257,12 @@ clone(void *stack, void *func, void *arg) {
   pproc->tf->ebp = pproc->tf->esp;
 
   for(int i=0; i<NOFILE; i++) {
-    if (proc->ofile[i])
-      pproc->ofile[i] = filedup(proc->ofile[i]);
+    if (myproc()->ofile[i])
+      pproc->ofile[i] = filedup(myproc()->ofile[i]);
   }
-  pproc->cwd = idup(proc->cwd);
+  pproc->cwd = idup(myproc()->cwd);
 
-  safestrcpy(pproc->name, proc->name, sizeof(proc->name));
+  safestrcpy(pproc->name, myproc()->name, sizeof(myproc()->name));
   pid = pproc->pid;
   pproc->state = RUNNABLE;
   release(&ptable.lock);

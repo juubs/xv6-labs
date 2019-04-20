@@ -221,6 +221,54 @@ fork(void)
   return pid;
 }
 
+int
+clone(void *stack, void *func, void *arg) {
+  int pid;
+  struct proc *pproc;
+
+  if ((uint)stack % PGSIZE != 0 || (proc->sz - (uint)stack) < PGSIZE) {
+    cprintf("new stack creation error\n");
+    return -1;
+  }
+
+  acquire(&ptable.lock);
+
+  if ((proc = allocproc()) == 0) {
+    cprintf("alloc error\n");
+    release(&ptable.lock);
+    return -1;
+  }
+
+  pproc->pgdir = proc->pgdir;
+
+  pproc->sz = proc->sz;
+  pproc->parent = np->parent;
+  *pproc->tf = *proc->tf;
+  pproc->tf->eax = 0;
+
+  pproc->ustack = (uint)stack;
+
+  pproc->tf->esp = (uint)stack + PGSIZE - 4;
+  *((uint*)(pproc->tf->esp)) = (uint)arg;
+  pproc->tf->esp -= 4;
+  *((uint*)(pproc->tf->esp)) = 0xFFFFFFFF;
+
+  pproc->tf->eip = (uint)func;
+  pproc->tf->ebp = pproc->tf->esp;
+
+  for(int i=0; i<NOFILE; i++) {
+    if (proc->ofile[i])
+      pproc->ofile[i] = filedup(proc->ofile[i]);
+  }
+  pproc->cwd = idup(proc->cwd);
+
+  safestrcpy(pproc->name, proc->name, sizeof(proc->name));
+  pid = pproc->pid;
+  pproc->state = RUNNABLE;
+  release(&ptable.lock);
+  return pid;
+}
+
 // Exit the current process.  Does not return.
 // An exited process remains in the zombie state
 // until its parent calls wait() to find out it exited.

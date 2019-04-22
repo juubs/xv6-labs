@@ -193,6 +193,7 @@ fork(void)
   @param stack Pointer to the new user stack, already allocated by the caller.
   @param func Pointer to where to continue execution after return to calling process.
   @param arg Arguments necessary for 'func' on return to calling process.
+  @return In the calling process, returns the pid. In the created cloned process, will return 0.
 */
 int
 clone(void *stack, void *func, void *arg)
@@ -258,6 +259,7 @@ clone(void *stack, void *func, void *arg)
   @brief Waits for a cloned process (thread) to finish execution.
   Join is like wait except it works with concurrent threads created from clone instead of forked processes created from fork. It will perform necessary checks to verify that there are still existing threads of the current process to wait for, and if it is not ready to freed upon calling, will go to sleep until the cloned process is done executing.
   @param stack Space to store the cloned process' user stack so that it can be freed once back in userspace.
+  @return On successful joining of an exiting thread, will return that thread's pid. Otherwise, will return -1 if the currently running process has no threads or if it has been killed.
 */
 int
 join(void **stack)
@@ -403,6 +405,7 @@ wait(void)
   @brief Set the scheduling policy and priority of the current process. Will immediately preempt back to the scheduler if the process is being set to a FIFO scheduler.
   @param policy The selected scheduling policy to apply to the process. Defined in sched.h in the schedpolicy_lab3 enum.
   @param priority An integer priority to set for the process. Higher priority means it will be executed before lower priority processes.
+  @return Returns 0 on successful execution.
 */
 int
 setscheduler(int policy, int priority)

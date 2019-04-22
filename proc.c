@@ -1,3 +1,8 @@
+/**
+  @file proc.c
+  @brief Main system calls defined here.
+*/
+
 #include "types.h"
 #include "defs.h"
 #include "param.h"
@@ -27,6 +32,10 @@ pinit(void)
   initlock(&ptable.lock, "ptable");
 }
 
+/**
+  @brief Gets the number ID of the cpu that is running the current process.
+  @return ID of the current process' CPU.
+*/
 int
 getcpu(void)
 {
@@ -179,7 +188,12 @@ fork(void)
   return pid;
 }
 
-// Like fork, but share memory space with parent
+/**
+  @brief Creates a new process, copying the calling process but sharing memory space.
+  @param stack Pointer to the new user stack, already allocated by the caller.
+  @param func Pointer to where to continue execution after return to calling process.
+  @param arg Arguments necessary for 'func' on return to calling process.
+*/
 int
 clone(void *stack, void *func, void *arg)
 {
@@ -240,6 +254,11 @@ clone(void *stack, void *func, void *arg)
 
 // Like wait, but for clones instead of forks.
 // Takes in double stack pointer to stick the procs ustack in to free back in userspace.
+/**
+  @brief Waits for a cloned process (thread) to finish execution.
+  Join is like wait except it works with concurrent threads created from clone instead of forked processes created from fork. It will perform necessary checks to verify that there are still existing threads of the current process to wait for, and if it is not ready to freed upon calling, will go to sleep until the cloned process is done executing.
+  @param stack Space to store the cloned process' user stack so that it can be freed once back in userspace.
+*/
 int
 join(void **stack)
 {
@@ -380,6 +399,11 @@ wait(void)
   }
 }
 
+/**
+  @brief Set the scheduling policy and priority of the current process. Will immediately preempt back to the scheduler if the process is being set to a FIFO scheduler.
+  @param policy The selected scheduling policy to apply to the process. Defined in sched.h in the schedpolicy_lab3 enum.
+  @param priority An integer priority to set for the process. Higher priority means it will be executed before lower priority processes.
+*/
 int
 setscheduler(int policy, int priority)
 {
@@ -393,6 +417,10 @@ setscheduler(int policy, int priority)
   return 0;
 }
 
+/**
+  @brief Abstracted process switching done by the scheduler to switch contexts to the next process to run.
+  @param p The selected process to swtch() to.
+*/
 void
 run_proc(struct proc *p)
 {

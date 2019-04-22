@@ -3,25 +3,38 @@
 
 #define PGSIZE 4096
 
-typedef struct _pthread_mutex_t {
+typedef struct _pthread_attr_t {
+  // fill attributes here
+} pthread_attr_t;
 
-} pthread_mutex_t;
+typedef struct _pthread_t {
+  uint id;
+  pthread_attr_t attr;
+} pthread_t;
 
 typedef struct _pthread_mutexattr_t {
-
+  char *name;
+  struct cpu cpu;
 } pthread_mutexattr_t;
+
+typedef struct _pthread_mutex_t {
+  uint locked;
+  pthread_mutexattr_t attr;
+} pthread_mutex_t;
+
+typedef struct _pthread_condattr_t {
+  // fill attributes here
+} pthread_condattr_t;
 
 typedef struct _pthread_cond_t {
 
+  pthread_condattr_t attr;
 } pthread_cond_t;
 
-typedef struct _pthread_condattr_t {
-
-} pthread_condattr_t;
-
 // pthread.c
-int pthread_create(void (*func)(void*), void *arg);
-int pthread_join();
+int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine)(void *arg), void *arg);
+int pthread_join(pthread thread, void **retval);
+void pthread_exit(void *retval);
 
 // mutex.c
 int pthread_mutex_init(pthread_mutex_t *mutex, pthread_mutexattr_t *mutexattr);

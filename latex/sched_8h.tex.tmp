@@ -1,0 +1,23 @@
+\hypertarget{sched_8h}{}\section{sched.\+h File Reference}
+\label{sched_8h}\index{sched.\+h@{sched.\+h}}
+
+
+Definitions for new scheduling policies.  
+
+
+This graph shows which files directly or indirectly include this file\+:
+% FIG 0
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{sched_8h_a535556cdcf29b612499f57b24c963364}{schedpolicy\+\_\+lab3} \{ {\bfseries S\+C\+H\+E\+D\+\_\+\+RR}, 
+{\bfseries S\+C\+H\+E\+D\+\_\+\+F\+I\+FO}, 
+{\bfseries S\+C\+H\+E\+D\+\_\+\+O\+T\+H\+ER}
+ \}\hypertarget{sched_8h_a535556cdcf29b612499f57b24c963364}{}\label{sched_8h_a535556cdcf29b612499f57b24c963364}
+\begin{DoxyCompactList}\small\item\em Enum containing different scheduling policy options. \end{DoxyCompactList}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Definitions for new scheduling policies. 
+

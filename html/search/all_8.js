@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['listcmd',['listcmd',['../structlistcmd.html',1,'']]],
-  ['lock_5ft',['lock_t',['../structlock__t.html',1,'']]],
-  ['log',['log',['../structlog.html',1,'']]],
-  ['logheader',['logheader',['../structlogheader.html',1,'']]]
+  ['initlock_5ft',['initlock_t',['../ulib_8c.html#ab91ea8a7c840e42a87cd356ff27fa0e4',1,'ulib.c']]],
+  ['inode',['inode',['../structinode.html',1,'']]],
+  ['ioapic',['ioapic',['../structioapic.html',1,'']]]
 ];

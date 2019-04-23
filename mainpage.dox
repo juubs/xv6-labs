@@ -1,0 +1,9 @@
+/**
+  \mainpage Lab 3: Scheduling and Kernel Threads
+  \section sec1 Files modified in this lab:
+    proc.h\n
+    proc.c\n
+    sched.h\n
+    sched_test.c\n
+    ulib.c\n
+*/

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['header',['header',['../unionheader.html',1,'']]]
+  ['gatedesc',['gatedesc',['../structgatedesc.html',1,'']]],
+  ['getcpu',['getcpu',['../proc_8c.html#a0c7bd1e43c250440fa7b0bd0182d699b',1,'proc.c']]]
 ];

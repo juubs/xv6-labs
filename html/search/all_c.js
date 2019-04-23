@@ -1,11 +1,10 @@
 var searchData=
 [
-  ['sched_2eh',['sched.h',['../sched_8h.html',1,'']]],
-  ['schedpolicy_5flab3',['schedpolicy_lab3',['../sched_8h.html#a535556cdcf29b612499f57b24c963364',1,'sched.h']]],
-  ['segdesc',['segdesc',['../structsegdesc.html',1,'']]],
-  ['spinlock',['spinlock',['../structspinlock.html',1,'']]],
-  ['sprintbuf',['sprintbuf',['../structsprintbuf.html',1,'']]],
-  ['stab',['Stab',['../structStab.html',1,'']]],
-  ['stat',['stat',['../structstat.html',1,'']]],
-  ['superblock',['superblock',['../structsuperblock.html',1,'']]]
+  ['pipe',['pipe',['../structpipe.html',1,'']]],
+  ['pipecmd',['pipecmd',['../structpipecmd.html',1,'']]],
+  ['priority_5flab3',['priority_lab3',['../structproc.html#aa323a7bacc088f7042a7b015080fc8f6',1,'proc']]],
+  ['proc',['proc',['../structproc.html',1,'']]],
+  ['proc_2ec',['proc.c',['../proc_8c.html',1,'']]],
+  ['proc_2eh',['proc.h',['../proc_8h.html',1,'']]],
+  ['proghdr',['proghdr',['../structproghdr.html',1,'']]]
 ];

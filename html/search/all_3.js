@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['eipdebuginfo',['Eipdebuginfo',['../structEipdebuginfo.html',1,'']]],
-  ['elfhdr',['elfhdr',['../structelfhdr.html',1,'']]],
-  ['execcmd',['execcmd',['../structexeccmd.html',1,'']]]
+  ['devsw',['devsw',['../structdevsw.html',1,'']]],
+  ['dinode',['dinode',['../structdinode.html',1,'']]],
+  ['dirent',['dirent',['../structdirent.html',1,'']]]
 ];

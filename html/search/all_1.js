@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['cmd',['cmd',['../structcmd.html',1,'']]],
-  ['command',['Command',['../structCommand.html',1,'']]],
-  ['context',['context',['../structcontext.html',1,'']]],
-  ['cpu',['cpu',['../structcpu.html',1,'']]]
+  ['backcmd',['backcmd',['../structbackcmd.html',1,'']]],
+  ['buf',['buf',['../structbuf.html',1,'']]]
 ];

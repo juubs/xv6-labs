@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['file',['file',['../structfile.html',1,'']]]
+  ['eipdebuginfo',['Eipdebuginfo',['../structEipdebuginfo.html',1,'']]],
+  ['elfhdr',['elfhdr',['../structelfhdr.html',1,'']]],
+  ['execcmd',['execcmd',['../structexeccmd.html',1,'']]]
 ];

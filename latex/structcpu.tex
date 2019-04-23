@@ -2,40 +2,52 @@
 \label{structcpu}\index{cpu@{cpu}}
 
 
+Per-\/\+C\+PU state.  
+
+
+
+
+{\ttfamily \#include $<$proc.\+h$>$}
+
+
+
 Collaboration diagram for cpu\+:
 % FIG 0
 \subsection*{Data Fields}
 \begin{DoxyCompactItemize}
 \item 
-uchar {\bfseries apicid}\hypertarget{structcpu_ad08a3478ec15fc8bec1d9b6b5a0431db}{}\label{structcpu_ad08a3478ec15fc8bec1d9b6b5a0431db}
-
+\mbox{\Hypertarget{structcpu_ad08a3478ec15fc8bec1d9b6b5a0431db}\label{structcpu_ad08a3478ec15fc8bec1d9b6b5a0431db}} 
+uchar {\bfseries apicid}
 \item 
-struct \hyperlink{structcontext}{context} $\ast$ {\bfseries scheduler}\hypertarget{structcpu_aaa1510fdf8a2230c033d04e13e4fdd9e}{}\label{structcpu_aaa1510fdf8a2230c033d04e13e4fdd9e}
-
+\mbox{\Hypertarget{structcpu_aaa1510fdf8a2230c033d04e13e4fdd9e}\label{structcpu_aaa1510fdf8a2230c033d04e13e4fdd9e}} 
+struct \mbox{\hyperlink{structcontext}{context}} $\ast$ {\bfseries scheduler}
 \item 
-struct \hyperlink{structtaskstate}{taskstate} {\bfseries ts}\hypertarget{structcpu_a32e7b5aa877171c943d47038e818a159}{}\label{structcpu_a32e7b5aa877171c943d47038e818a159}
-
+\mbox{\Hypertarget{structcpu_a32e7b5aa877171c943d47038e818a159}\label{structcpu_a32e7b5aa877171c943d47038e818a159}} 
+struct \mbox{\hyperlink{structtaskstate}{taskstate}} {\bfseries ts}
 \item 
-struct \hyperlink{structsegdesc}{segdesc} {\bfseries gdt} \mbox{[}N\+S\+E\+GS\mbox{]}\hypertarget{structcpu_aee38fb8832f8e728538b2cee877d1c09}{}\label{structcpu_aee38fb8832f8e728538b2cee877d1c09}
-
+\mbox{\Hypertarget{structcpu_aee38fb8832f8e728538b2cee877d1c09}\label{structcpu_aee38fb8832f8e728538b2cee877d1c09}} 
+struct \mbox{\hyperlink{structsegdesc}{segdesc}} {\bfseries gdt} \mbox{[}N\+S\+E\+GS\mbox{]}
 \item 
-volatile uint {\bfseries started}\hypertarget{structcpu_a869f6e0e1dbf69de0bdb3546f981847f}{}\label{structcpu_a869f6e0e1dbf69de0bdb3546f981847f}
-
+\mbox{\Hypertarget{structcpu_a869f6e0e1dbf69de0bdb3546f981847f}\label{structcpu_a869f6e0e1dbf69de0bdb3546f981847f}} 
+volatile uint {\bfseries started}
 \item 
-int {\bfseries ncli}\hypertarget{structcpu_a9ccad8ae031c295f86e96de26df24805}{}\label{structcpu_a9ccad8ae031c295f86e96de26df24805}
-
+\mbox{\Hypertarget{structcpu_a9ccad8ae031c295f86e96de26df24805}\label{structcpu_a9ccad8ae031c295f86e96de26df24805}} 
+int {\bfseries ncli}
 \item 
-int {\bfseries intena}\hypertarget{structcpu_a26fc271fea8af30d67fc2ae22ef0a82f}{}\label{structcpu_a26fc271fea8af30d67fc2ae22ef0a82f}
-
+\mbox{\Hypertarget{structcpu_a26fc271fea8af30d67fc2ae22ef0a82f}\label{structcpu_a26fc271fea8af30d67fc2ae22ef0a82f}} 
+int {\bfseries intena}
 \item 
-struct \hyperlink{structcpu}{cpu} $\ast$ {\bfseries cpu}\hypertarget{structcpu_a96823491c316b96bdd2fb80fa8e270f9}{}\label{structcpu_a96823491c316b96bdd2fb80fa8e270f9}
-
+\mbox{\Hypertarget{structcpu_a96823491c316b96bdd2fb80fa8e270f9}\label{structcpu_a96823491c316b96bdd2fb80fa8e270f9}} 
+struct \mbox{\hyperlink{structcpu}{cpu}} $\ast$ {\bfseries cpu}
 \item 
-struct \hyperlink{structproc}{proc} $\ast$ {\bfseries proc}\hypertarget{structcpu_a9e71a6265904fd644875a9ea5a413c89}{}\label{structcpu_a9e71a6265904fd644875a9ea5a413c89}
-
+\mbox{\Hypertarget{structcpu_a9e71a6265904fd644875a9ea5a413c89}\label{structcpu_a9e71a6265904fd644875a9ea5a413c89}} 
+struct \mbox{\hyperlink{structproc}{proc}} $\ast$ {\bfseries proc}
 \end{DoxyCompactItemize}
 
 
+\subsection{Detailed Description}
+Per-\/\+C\+PU state. 
+
 The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-proc.\+h\end{DoxyCompactItemize}
+\mbox{\hyperlink{proc_8h}{proc.\+h}}\end{DoxyCompactItemize}

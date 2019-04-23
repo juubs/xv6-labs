@@ -2,61 +2,73 @@
 \label{structproc}\index{proc@{proc}}
 
 
+Per-\/process state.  
+
+
+
+
+{\ttfamily \#include $<$proc.\+h$>$}
+
+
+
 Collaboration diagram for proc\+:
 % FIG 0
 \subsection*{Data Fields}
 \begin{DoxyCompactItemize}
 \item 
-uint {\bfseries sz}\hypertarget{structproc_a6e67042bb361124ff287af88efc33e00}{}\label{structproc_a6e67042bb361124ff287af88efc33e00}
-
+\mbox{\Hypertarget{structproc_a6e67042bb361124ff287af88efc33e00}\label{structproc_a6e67042bb361124ff287af88efc33e00}} 
+uint {\bfseries sz}
 \item 
-pde\+\_\+t $\ast$ {\bfseries pgdir}\hypertarget{structproc_ad430afc653e9eb6cee33954d5545b79d}{}\label{structproc_ad430afc653e9eb6cee33954d5545b79d}
-
+\mbox{\Hypertarget{structproc_ad430afc653e9eb6cee33954d5545b79d}\label{structproc_ad430afc653e9eb6cee33954d5545b79d}} 
+pde\+\_\+t $\ast$ {\bfseries pgdir}
 \item 
-char $\ast$ {\bfseries kstack}\hypertarget{structproc_a9f556df98482bff6c9216013d7581ae4}{}\label{structproc_a9f556df98482bff6c9216013d7581ae4}
-
+\mbox{\Hypertarget{structproc_a9f556df98482bff6c9216013d7581ae4}\label{structproc_a9f556df98482bff6c9216013d7581ae4}} 
+char $\ast$ {\bfseries kstack}
 \item 
-enum procstate {\bfseries state}\hypertarget{structproc_a0f2fe91548a1382672ae26e29ca9e736}{}\label{structproc_a0f2fe91548a1382672ae26e29ca9e736}
-
+\mbox{\Hypertarget{structproc_a0f2fe91548a1382672ae26e29ca9e736}\label{structproc_a0f2fe91548a1382672ae26e29ca9e736}} 
+enum procstate {\bfseries state}
 \item 
-int {\bfseries pid}\hypertarget{structproc_acf2bdf54d1f957ccbcdc987007029944}{}\label{structproc_acf2bdf54d1f957ccbcdc987007029944}
-
+\mbox{\Hypertarget{structproc_acf2bdf54d1f957ccbcdc987007029944}\label{structproc_acf2bdf54d1f957ccbcdc987007029944}} 
+int {\bfseries pid}
 \item 
-struct \hyperlink{structproc}{proc} $\ast$ {\bfseries parent}\hypertarget{structproc_a14ea8849701ffafba4d142725de154d4}{}\label{structproc_a14ea8849701ffafba4d142725de154d4}
-
+\mbox{\Hypertarget{structproc_a14ea8849701ffafba4d142725de154d4}\label{structproc_a14ea8849701ffafba4d142725de154d4}} 
+struct \mbox{\hyperlink{structproc}{proc}} $\ast$ {\bfseries parent}
 \item 
-struct \hyperlink{structtrapframe}{trapframe} $\ast$ {\bfseries tf}\hypertarget{structproc_a56ec07ac1e10ce42adfc8dd2a366071f}{}\label{structproc_a56ec07ac1e10ce42adfc8dd2a366071f}
-
+\mbox{\Hypertarget{structproc_a56ec07ac1e10ce42adfc8dd2a366071f}\label{structproc_a56ec07ac1e10ce42adfc8dd2a366071f}} 
+struct \mbox{\hyperlink{structtrapframe}{trapframe}} $\ast$ {\bfseries tf}
 \item 
-struct \hyperlink{structcontext}{context} $\ast$ {\bfseries context}\hypertarget{structproc_ae0d9bffe1ad1c7d60dd2733be0a2333c}{}\label{structproc_ae0d9bffe1ad1c7d60dd2733be0a2333c}
-
+\mbox{\Hypertarget{structproc_ae0d9bffe1ad1c7d60dd2733be0a2333c}\label{structproc_ae0d9bffe1ad1c7d60dd2733be0a2333c}} 
+struct \mbox{\hyperlink{structcontext}{context}} $\ast$ {\bfseries context}
 \item 
-void $\ast$ {\bfseries chan}\hypertarget{structproc_a03048a49756c2243576208ba4ec5fbd4}{}\label{structproc_a03048a49756c2243576208ba4ec5fbd4}
-
+\mbox{\Hypertarget{structproc_a03048a49756c2243576208ba4ec5fbd4}\label{structproc_a03048a49756c2243576208ba4ec5fbd4}} 
+void $\ast$ {\bfseries chan}
 \item 
-int {\bfseries killed}\hypertarget{structproc_afb4f94a3f4df9a835dbb41b0c26660a4}{}\label{structproc_afb4f94a3f4df9a835dbb41b0c26660a4}
-
+\mbox{\Hypertarget{structproc_afb4f94a3f4df9a835dbb41b0c26660a4}\label{structproc_afb4f94a3f4df9a835dbb41b0c26660a4}} 
+int {\bfseries killed}
 \item 
-struct \hyperlink{structfile}{file} $\ast$ {\bfseries ofile} \mbox{[}N\+O\+F\+I\+LE\mbox{]}\hypertarget{structproc_a4a9eb0352efe3fc097c91fccfaac50bd}{}\label{structproc_a4a9eb0352efe3fc097c91fccfaac50bd}
-
+\mbox{\Hypertarget{structproc_a4a9eb0352efe3fc097c91fccfaac50bd}\label{structproc_a4a9eb0352efe3fc097c91fccfaac50bd}} 
+struct \mbox{\hyperlink{structfile}{file}} $\ast$ {\bfseries ofile} \mbox{[}N\+O\+F\+I\+LE\mbox{]}
 \item 
-struct \hyperlink{structinode}{inode} $\ast$ {\bfseries cwd}\hypertarget{structproc_a493bc338ce008a838eef521972a35257}{}\label{structproc_a493bc338ce008a838eef521972a35257}
-
+\mbox{\Hypertarget{structproc_a493bc338ce008a838eef521972a35257}\label{structproc_a493bc338ce008a838eef521972a35257}} 
+struct \mbox{\hyperlink{structinode}{inode}} $\ast$ {\bfseries cwd}
 \item 
-char {\bfseries name} \mbox{[}16\mbox{]}\hypertarget{structproc_ac04af53e17d24b90c3cbfab56d658d62}{}\label{structproc_ac04af53e17d24b90c3cbfab56d658d62}
-
+\mbox{\Hypertarget{structproc_ac04af53e17d24b90c3cbfab56d658d62}\label{structproc_ac04af53e17d24b90c3cbfab56d658d62}} 
+char {\bfseries name} \mbox{[}16\mbox{]}
 \item 
-enum \hyperlink{sched_8h_a535556cdcf29b612499f57b24c963364}{schedpolicy\+\_\+lab3} {\bfseries schedpolicy\+\_\+lab3}\hypertarget{structproc_a0ffe0394d8404f50596733058d8069b8}{}\label{structproc_a0ffe0394d8404f50596733058d8069b8}
+\mbox{\Hypertarget{structproc_a0ffe0394d8404f50596733058d8069b8}\label{structproc_a0ffe0394d8404f50596733058d8069b8}} 
+enum \mbox{\hyperlink{sched_8h_a535556cdcf29b612499f57b24c963364}{schedpolicy\+\_\+lab3}} \mbox{\hyperlink{structproc_a0ffe0394d8404f50596733058d8069b8}{schedpolicy\+\_\+lab3}}
+\begin{DoxyCompactList}\small\item\em Scheduling policy of the process. Can be round robin, fifo, or default as defined in the enum in \mbox{\hyperlink{sched_8h}{sched.\+h}}. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{structproc_aa323a7bacc088f7042a7b015080fc8f6}\label{structproc_aa323a7bacc088f7042a7b015080fc8f6}} 
+int \mbox{\hyperlink{structproc_aa323a7bacc088f7042a7b015080fc8f6}{priority\+\_\+lab3}}
+\begin{DoxyCompactList}\small\item\em Integer priority of the process for scheduling. Higher priorities will be run before lower priorities. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{structproc_a4722b3b20db1b92dab48e1fb55161616}\label{structproc_a4722b3b20db1b92dab48e1fb55161616}} 
+uint \mbox{\hyperlink{structproc_a4722b3b20db1b92dab48e1fb55161616}{ustack}}
+\begin{DoxyCompactList}\small\item\em Address of the user stack for the process. Used when running threads. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
-\item 
-int {\bfseries priority\+\_\+lab3}\hypertarget{structproc_aa323a7bacc088f7042a7b015080fc8f6}{}\label{structproc_aa323a7bacc088f7042a7b015080fc8f6}
 
-\item 
-uint {\bfseries ustack}\hypertarget{structproc_a4722b3b20db1b92dab48e1fb55161616}{}\label{structproc_a4722b3b20db1b92dab48e1fb55161616}
-
-\end{DoxyCompactItemize}
-
+\subsection{Detailed Description}
+Per-\/process state. 
 
 The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-proc.\+h\end{DoxyCompactItemize}
+\mbox{\hyperlink{proc_8h}{proc.\+h}}\end{DoxyCompactItemize}

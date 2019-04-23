@@ -1,8 +1,49 @@
 \hypertarget{sched_8h}{}\section{sched.\+h File Reference}
-\label{sched_8h}\index{sched.\+h@{sched.\+h}}
+\label{sched_8h}\index{sched.h@{sched.h}}
 
 
 Definitions for new scheduling policies.  
 
 
 This graph shows which files directly or indirectly include this file\+:
+% FIG 0
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{sched_8h_a535556cdcf29b612499f57b24c963364}{schedpolicy\+\_\+lab3}} \{ \mbox{\hyperlink{sched_8h_a535556cdcf29b612499f57b24c963364a52fe874d96104f50e65c006f73c3b537}{S\+C\+H\+E\+D\+\_\+\+RR}}, 
+\mbox{\hyperlink{sched_8h_a535556cdcf29b612499f57b24c963364aeac62b0eeeb49c48d0ced7c24e683dc2}{S\+C\+H\+E\+D\+\_\+\+F\+I\+FO}}, 
+\mbox{\hyperlink{sched_8h_a535556cdcf29b612499f57b24c963364a4894e7b32f4adb6f45772da81e079112}{S\+C\+H\+E\+D\+\_\+\+O\+T\+H\+ER}}
+ \}
+\begin{DoxyCompactList}\small\item\em Different scheduling policy options. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Definitions for new scheduling policies. 
+
+
+
+\subsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{sched_8h_a535556cdcf29b612499f57b24c963364}\label{sched_8h_a535556cdcf29b612499f57b24c963364}} 
+\index{sched.h@{sched.h}!schedpolicy\_lab3@{schedpolicy\_lab3}}
+\index{schedpolicy\_lab3@{schedpolicy\_lab3}!sched.h@{sched.h}}
+\subsubsection{\texorpdfstring{schedpolicy\_lab3}{schedpolicy\_lab3}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{sched_8h_a535556cdcf29b612499f57b24c963364}{schedpolicy\+\_\+lab3}}}
+
+
+
+Different scheduling policy options. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SCHED\_RR@{SCHED\_RR}!sched.h@{sched.h}}\index{sched.h@{sched.h}!SCHED\_RR@{SCHED\_RR}}}\mbox{\Hypertarget{sched_8h_a535556cdcf29b612499f57b24c963364a52fe874d96104f50e65c006f73c3b537}\label{sched_8h_a535556cdcf29b612499f57b24c963364a52fe874d96104f50e65c006f73c3b537}} 
+S\+C\+H\+E\+D\+\_\+\+RR&Round Robin scheduling policy. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SCHED\_FIFO@{SCHED\_FIFO}!sched.h@{sched.h}}\index{sched.h@{sched.h}!SCHED\_FIFO@{SCHED\_FIFO}}}\mbox{\Hypertarget{sched_8h_a535556cdcf29b612499f57b24c963364aeac62b0eeeb49c48d0ced7c24e683dc2}\label{sched_8h_a535556cdcf29b612499f57b24c963364aeac62b0eeeb49c48d0ced7c24e683dc2}} 
+S\+C\+H\+E\+D\+\_\+\+F\+I\+FO&First in, First out scheduling policy. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SCHED\_OTHER@{SCHED\_OTHER}!sched.h@{sched.h}}\index{sched.h@{sched.h}!SCHED\_OTHER@{SCHED\_OTHER}}}\mbox{\Hypertarget{sched_8h_a535556cdcf29b612499f57b24c963364a4894e7b32f4adb6f45772da81e079112}\label{sched_8h_a535556cdcf29b612499f57b24c963364a4894e7b32f4adb6f45772da81e079112}} 
+S\+C\+H\+E\+D\+\_\+\+O\+T\+H\+ER&Default scheduling policy if none is specifically applied to a process. \\
+\hline
+
+\end{DoxyEnumFields}

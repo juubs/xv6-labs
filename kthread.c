@@ -7,6 +7,12 @@
 
 struct lock_t *lk;
 
+/**
+  @brief Creates a new thread that will run starting at start_routine with argument arg passed in.
+  @param start_routine Where to begin execution of the new thread.
+  @param arg Argument to pass into the start_routine.
+  @return Returns the result of the clone system call made.
+*/
 int
 thread_create(void (*start_routine)(void*), void *arg)
 {
@@ -17,6 +23,10 @@ thread_create(void (*start_routine)(void*), void *arg)
   return clone(stack, start_routine, arg);
 }
 
+/**
+  @brief Wait for a thread of the current process to finish execution, then free the user stack used by that thread.
+  @return Returns the result of the join system call made.
+*/
 int
 thread_join()
 {
@@ -32,6 +42,11 @@ thread_join()
   return freed;
 }
 
+/**
+  @brief First thread testing function. 
+  Increments given integer and prints the thread's pid, what cpu it is being run on, and the new value of a.
+  @param a Variable for the thread to increment to show shared memory among threads.
+*/
 static void
 thread_test(void *a)
 {
@@ -45,7 +60,11 @@ thread_test(void *a)
   exit();
 }
 
-// uthread example of blocking
+/**
+  @brief Second thread testing function.
+  This thread will set itself to a FIFO schedule (a higher priority than the default) with priority of the given variable. It will then print the same info as thread_test, but sleep for a small period of time before incrementing a and exiting. This is used to show that other threads will still be running while this one sleeps, something not possible with user-level threads.
+  @param a Variable for the thread to increment to show shared memory among threads.
+*/
 static void
 thread_test2(void *a)
 {
@@ -63,7 +82,11 @@ thread_test2(void *a)
   exit();
 }
 
-// uthread example done with kthreads
+/**
+  @brief Third thread testing function.
+  This thread is the same as thread_test but will set itself to a Round Robin schedule. This will give the current process a lower priority than the threads given thread_test and so it will be seen how scheduling works alongside threading to control concurrent execution.
+  @param a Variable for the thread to increment to show shared memory among threads.
+*/
 static void
 thread_test3(void *a)
 {
@@ -78,6 +101,9 @@ thread_test3(void *a)
   exit();
 }
 
+/**
+  @brief Main function to split off of with clones and forks. Uses a variety of the test functions to show interactions between different schedulers alongside threading and how one thread sleeping interacts with the others.
+*/
 int
 main(int argc, char *argv[])
 {

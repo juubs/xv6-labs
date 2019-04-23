@@ -444,6 +444,11 @@ run_proc(struct proc *p)
 //  - swtch to start running that process
 //  - eventually that process transfers control
 //      via swtch back to the scheduler.
+
+/**
+  @brief Main function that each CPU will run to switch between processes. Will never return.\n
+  This is where each CPU will spend time searching for the next process to run and where to core of the scheduling algorithms is taken care of. It will first look over the process table and run the FIFO process with the highest priority. If there are no FIFO processes, it will then look over the table again, searching for the highest priority Round Robin process. If it finds a FIFO process while searching for Round Robin processes, it will break and begin again since a process with a higher priority has been added in the time it has been looking through the table.
+*/
 void
 scheduler(void)
 {

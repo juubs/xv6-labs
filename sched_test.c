@@ -1,3 +1,8 @@
+/**
+  @file sched_test.c
+  @brief User program for testing new scheduling functionality.
+*/
+
 #include "types.h"
 #include "stat.h"
 #include "user.h"
@@ -5,6 +10,10 @@
 
 void run_child();
 
+/**
+  @brief Testing different scheduling policies and priorities among multiple processes trying to run at the same time.
+  This test function sets the main process to a very high priority so that it will spawn all its' child processes before the scheduler will begin executing any of them. It then assigns the different threads a variety of policies and priorities (using the example shown in the assignment description) before running a simple spin loop while occasionally printing out executing progress. This allows the switching of processes and execution among different scheduling policies to be easily followed. 
+*/
 int
 main(void) 
 {
@@ -65,6 +74,10 @@ main(void)
   exit();
 }
 
+/**
+  @brief The loop that each child of the main process will run.
+  Each processes simply spins for a long time, printing its' progress every 10% of the way to being done.
+*/
 void
 run_child() {
   //spin for a bit

@@ -1,21 +1,40 @@
+/**
+  @file ulib.c
+  @brief Some simple functions to help writing user programs.
+*/
+
 #include "types.h"
 #include "stat.h"
 #include "fcntl.h"
 #include "user.h"
 #include "x86.h"
 
+/**
+  @brief Initializes a lock.
+  @param lk Pointer to a lock that has not been initialized or used yet.
+*/
 void
 initlock_t(struct lock_t *lk)
 {
   lk->locked = 0;
 }
 
+/**
+  @brief Acqiures the lock.
+  Spins until the lock is available to acquire and then atomically takes control of it.
+  @param lk Pointer to an initialized lock.
+*/
 void
 acquire_t(struct lock_t *lk)
 {
   while (xchg(&lk->locked, 1) != 0) ;
 }
 
+/**
+  @brief Release the lock.
+  Releases a lock that the process has acquired and is done needing to hold. Undefined behaviour if called when not holding the lock or if called on an uninitialized lock.
+  @param lk Pointer to an initialized and held lock.
+*/
 void
 release_t(struct lock_t *lk)
 {

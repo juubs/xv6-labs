@@ -1,6 +1,6 @@
 /** 
   * @file pthreadcondtest.c
-  * @brief Pthread library usage example of condition variables. Creates 3 threads, one that increments a global counter, and 2 that wait until that counter hits a certain number. The incrementing thread will signal the condition variable on every increment, but the other threads will go back to sleep until the counter reaches their given numbers. Once it reaches that, those threads will print that they have done so and exit.\
+  * @brief Pthread library usage example of condition variables. Creates 3 threads, one that increments a global counter, and 2 that wait until that counter hits a certain number. The incrementing thread will signal the condition variable on every increment, but the other threads will go back to sleep until the counter reaches their given numbers. Once it reaches that, those threads will print that they have done so and exit.\n
   * Run with 'pthreadcondtest' from the xv6 shell.
   */
 

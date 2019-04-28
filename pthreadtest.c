@@ -1,3 +1,9 @@
+/**
+  * @file pthreadtest.c
+  * @brief Pthread test using all pieces of library.\n
+  * Run with 'pthreadtest' in the xv6 shell.
+  */ 
+
 #include "types.h"
 #include "stat.h"
 #include "user.h"

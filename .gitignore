@@ -15,7 +15,7 @@ kernel
 kernelmemfs
 mkfs
 .gdbinit
-html/
-latex/
+doxygen/latex/
 Doxyfile
 Doxyfile.bak
+mainpage.dox

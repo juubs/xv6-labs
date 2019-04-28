@@ -1,6 +1,6 @@
 /**
   * @file pthreadmutextest.c
-  * @brief Pthread library usage example of mutual exclusive (mutex) locks. Will create 5 threads all running a simple loop that periodically outputs its running status. It will do this twice, once running the loop not inside a mutex lock, and then again running the loop inside a lock. The output of the intermediate progress of each individual process shows how mutex locks can help control execution flow of user programs.\
+  * @brief Pthread library usage example of mutual exclusive (mutex) locks. Will create 5 threads all running a simple loop that periodically outputs its running status. It will do this twice, once running the loop not inside a mutex lock, and then again running the loop inside a lock. The output of the intermediate progress of each individual process shows how mutex locks can help control execution flow of user programs.\n
   * Run with 'pthreadmutextest' from the xv6 shell.
   */
 

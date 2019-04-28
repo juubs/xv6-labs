@@ -1,3 +1,7 @@
+/**
+  * @file proc.c
+  */
+
 #include "types.h"
 #include "defs.h"
 #include "param.h"
@@ -367,6 +371,11 @@ wait(void)
   }
 }
 
+/**
+  * @brief Waits for the given thread to exit.
+  * @param thread Thread to wait on.
+  * @return Returns the pid of the exiting thread on success, or -1 if the thread does not exist as part of the current process or the process has been killed.
+  */
 int
 thread_join(void *thread) {
   struct proc *proc = myproc();
@@ -411,6 +420,10 @@ thread_join(void *thread) {
   }
 }
 
+/**
+  * @brief Exit, but implemented for threads. Can save a return value and doesn't wipe out the proc's pgdir.
+  * @param retval Pointer to value to return to process calling thread_exit on this thread.
+  */
 void
 thread_exit(void* retval) {
 
@@ -560,6 +573,10 @@ forkret(void)
   // Return to "caller", actually trapret (see allocproc).
 }
 
+/**
+  * @brief Sleeplock for implementing user level mutex locks. Used by pthread library.
+  * @param mutex Mutex object to lock.
+  */
 void
 mutex_sleep(void *mutex) {
   // proc is holding mutex prot lock if here
@@ -582,6 +599,11 @@ mutex_sleep(void *mutex) {
   while (xchg(&mut->lk.locked, 1) != 0) ;
 }    
 
+/**
+  * @brief Go to sleep on the given condition variable while holding the given mutex. Will atomically unlock mutex / go to sleep and then re-lock the mutex while waking up.
+  * @param cv Condition variable to sleep on.
+  * @param mutex Mutex being held by process to help the condition variable.
+  */ 
 void
 cond_sleep(void *cv, void *mutex) {
   struct proc *proc = myproc();
@@ -610,11 +632,19 @@ cond_sleep(void *cv, void *mutex) {
   xchg(&mut->lk.locked, 0);
 }
 
+/**
+  * @brief Wakeup process sleeping on a mutex.
+  * @param mutex Mutex to unlock.
+  */
 void
 mutex_wakeup(void *mutex) {
   wakeup(mutex);
 }
 
+/**
+  * @brief Wakeup process sleeping on a condition variable.
+  * @param cv Condition variable to wake up.
+  */ 
 void
 cond_wakeup(void *cv) {
   wakeup(cv);

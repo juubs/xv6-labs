@@ -1,3 +1,5 @@
+#include "pthread.h"
+
 // Per-CPU state
 struct cpu {
   uchar apicid;                // Local APIC ID
@@ -49,7 +51,11 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+  // threading necessities
   uint ustack;
+  uint isthread;
+  pthread_t *thread;
+  pthread_cond_t *cv;
 };
 
 // Process memory is laid out contiguously, low addresses first:

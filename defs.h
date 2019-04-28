@@ -106,7 +106,7 @@ int             pipewrite(struct pipe*, char*, int);
 int             cpuid(void);
 void            exit(void);
 int             fork(void);
-int             clone(void*, void*, void*);
+int             clone(void*, void*, void*, void*);
 int             growproc(int);
 int             kill(int);
 struct cpu*     mycpu(void);
@@ -121,7 +121,13 @@ void            userinit(void);
 int             wait(void);
 void            wakeup(void*);
 void            yield(void);
-
+void            thread_exit(void*);
+int             thread_join(void*);
+void            mutex_sleep(void*);
+void            mutex_wakeup(void*);
+void            cond_sleep(void*, void*);
+void            cond_wakeup(void*);
+  
 // swtch.S
 void            swtch(struct context**, struct context*);
 

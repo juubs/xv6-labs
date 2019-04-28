@@ -6,6 +6,7 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
+#include "pthread.h"
 
 struct {
   struct spinlock lock;
@@ -76,7 +77,6 @@ allocproc(void)
   struct proc *p;
   char *sp;
 
-  acquire(&ptable.lock);
 
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
     if(p->state == UNUSED)
@@ -89,7 +89,6 @@ found:
   p->state = EMBRYO;
   p->pid = nextpid++;
 
-  release(&ptable.lock);
 
   // Allocate kernel stack.
   if((p->kstack = kalloc()) == 0){
@@ -112,6 +111,8 @@ found:
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
 
+  p->isthread = 0;
+
   return p;
 }
 
@@ -122,6 +123,8 @@ userinit(void)
 {
   struct proc *p;
   extern char _binary_initcode_start[], _binary_initcode_size[];
+
+  acquire(&ptable.lock);
 
   p = allocproc();
   
@@ -146,8 +149,6 @@ userinit(void)
   // run this process. the acquire forces the above
   // writes to be visible, and the lock is also needed
   // because the assignment might not be atomic.
-  acquire(&ptable.lock);
-
   p->state = RUNNABLE;
 
   release(&ptable.lock);
@@ -184,6 +185,8 @@ fork(void)
   struct proc *np;
   struct proc *curproc = myproc();
 
+  acquire(&ptable.lock);
+
   // Allocate process.
   if((np = allocproc()) == 0){
     return -1;
@@ -212,8 +215,6 @@ fork(void)
 
   pid = np->pid;
 
-  acquire(&ptable.lock);
-
   np->state = RUNNABLE;
 
   release(&ptable.lock);
@@ -222,7 +223,7 @@ fork(void)
 }
 
 int
-clone(void *stack, void *func, void *arg) {
+clone(void *thread, void *stack, void *func, void *arg) {
   int pid;
   struct proc *pproc;
 
@@ -242,7 +243,7 @@ clone(void *stack, void *func, void *arg) {
   pproc->pgdir = myproc()->pgdir;
 
   pproc->sz = myproc()->sz;
-  pproc->parent = myproc()->parent;
+  pproc->parent = myproc();
   *pproc->tf = *myproc()->tf;
   pproc->tf->eax = 0;
 
@@ -256,6 +257,10 @@ clone(void *stack, void *func, void *arg) {
   pproc->tf->eip = (uint)func;
   pproc->tf->ebp = pproc->tf->esp;
 
+  pproc->isthread = 1;
+  pproc->thread = (pthread_t*)thread;
+  myproc()->isthread = 1;
+
   for(int i=0; i<NOFILE; i++) {
     if (myproc()->ofile[i])
       pproc->ofile[i] = filedup(myproc()->ofile[i]);
@@ -264,7 +269,10 @@ clone(void *stack, void *func, void *arg) {
 
   safestrcpy(pproc->name, myproc()->name, sizeof(myproc()->name));
   pid = pproc->pid;
+
+
   pproc->state = RUNNABLE;
+
   release(&ptable.lock);
   return pid;
 }
@@ -357,6 +365,98 @@ wait(void)
     // Wait for children to exit.  (See wakeup1 call in proc_exit.)
     sleep(curproc, &ptable.lock);  //DOC: wait-sleep
   }
+}
+
+int
+thread_join(void *thread) {
+  struct proc *proc = myproc();
+  int havethreads;
+
+  acquire(&ptable.lock);
+
+  for(;;) {
+    havethreads = 0;
+    for(struct proc *p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+      // not a child of this proc
+      if (p->parent != proc || proc->pgdir != p->pgdir)
+        continue;
+
+      // check for specific thread
+      if (p->thread != (pthread_t*)thread)
+        continue;
+
+      havethreads = 1;
+
+      // finish off closing the thread
+      // similar to wait, but doesn't free the pgdir
+      if (p->state == ZOMBIE) {
+        int pid = p->pid;
+        kfree(p->kstack);
+        p->kstack = 0;
+        p->pid = 0;
+        p->name[0] = 0;
+        p->killed = 0;
+        p->state = UNUSED;
+        release(&ptable.lock);
+        return pid;
+      }
+    }
+
+    if (!havethreads || proc->killed) {
+      release(&ptable.lock);
+      return -1;
+    }
+    // sleep until thread is done
+    sleep(proc, &ptable.lock); 
+  }
+}
+
+void
+thread_exit(void* retval) {
+
+  struct proc *proc = myproc();
+
+  if (retval != NULL)
+    *(proc->thread->retval) = retval;
+
+  if (myproc() == initproc)
+    panic("init exiting");
+
+  for(int fd=0; fd<NOFILE; fd++) {
+    if (proc->ofile[fd]) {
+      fileclose(proc->ofile[fd]);
+      proc->ofile[fd] = 0;
+    }
+  }
+  
+  begin_op();
+  iput(proc->cwd);
+  end_op();
+  proc->cwd = 0;
+
+  acquire(&ptable.lock);
+  wakeup1(proc->parent);
+
+  for(struct proc *p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+    // check for children of exiting thread
+    if (p->parent == proc) {
+      // check if child is a thread
+      if (p->pgdir != proc->pgdir) {
+        // child is not thread, pass to initproc
+        p->parent = initproc;
+        if (p->state == ZOMBIE)
+          wakeup1(initproc);
+      } else {
+        // child is thread
+        p->parent = 0;
+        p->state = ZOMBIE;
+      }
+    }
+  }
+
+  proc->state = ZOMBIE;
+  sched();
+  panic("zombie exit");
 }
 
 //PAGEBREAK: 42
@@ -458,6 +558,66 @@ forkret(void)
   }
 
   // Return to "caller", actually trapret (see allocproc).
+}
+
+void
+mutex_sleep(void *mutex) {
+  // proc is holding mutex prot lock if here
+  struct proc *proc = myproc();
+  pthread_mutex_t *mut = (pthread_mutex_t*)mutex;
+ 
+  // acquire ptable lock, release mutex lock
+  acquire(&ptable.lock);
+  xchg(&mut->lk.locked, 0);
+
+  // sleep
+  proc->chan = mutex;
+  proc->state = SLEEPING;
+  sched();
+
+  proc->chan = 0;
+
+  // release ptable lock and reacquire mutex prot lock
+  release(&ptable.lock);
+  while (xchg(&mut->lk.locked, 1) != 0) ;
+}    
+
+void
+cond_sleep(void *cv, void *mutex) {
+  struct proc *proc = myproc();
+  pthread_mutex_t *mut = (pthread_mutex_t*)mutex;
+  proc->cv = cv;
+
+  acquire(&ptable.lock);
+  // unlock cond mutex
+  while (xchg(&mut->lk.locked, 1) != 0) ;
+  mut->locked = 0;
+  wakeup1(mut);
+  xchg(&mut->lk.locked, 0); 
+
+  proc->chan = cv;
+  proc->state = SLEEPING;
+  sched();
+
+  proc->chan = 0;
+
+  release(&ptable.lock);
+  // lock cond mutex
+  while (xchg(&mut->lk.locked, 1) != 0) ;
+  while (mut->locked)
+    mutex_sleep(mut);
+  mut->locked = 1;
+  xchg(&mut->lk.locked, 0);
+}
+
+void
+mutex_wakeup(void *mutex) {
+  wakeup(mutex);
+}
+
+void
+cond_wakeup(void *cv) {
+  wakeup(cv);
 }
 
 // Atomically release lock and sleep on chan.

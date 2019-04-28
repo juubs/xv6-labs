@@ -8,31 +8,97 @@
 #include "proc.h"
 
 int
-sys_fork(void)
-{
+sys_fork(void) {
   return fork();
 }
 
 int
-sys_exit(void)
-{
+sys_exit(void) {
   exit();
   return 0;  // not reached
 }
 
 int
-sys_clone(void)
-{
-  void *stack, *func, *arg;
+sys_clone(void) {
+  void *thread, *stack, *func, *arg;
 
-  if (argptr(0, (void*)&stack, sizeof(stack)) < 0)
+  if (argptr(0, (void*)&thread, sizeof(thread)) < 0)
     return -1;
-  if (argptr(1, (void*)&func, sizeof(func)) < 0)
+  if (argptr(1, (void*)&stack, sizeof(stack)) < 0)
     return -1;
   if (argptr(2, (void*)&func, sizeof(func)) < 0)
     return -1;
+  if (argptr(3, (void*)&arg, sizeof(arg)) < 0)
+    return -1;
 
-  return clone(stack, func, arg);
+  return clone(thread, stack, func, arg);
+}
+
+int
+sys_thread_join(void) {
+  void *thread;
+
+  if (argptr(0, (void*)&thread, sizeof(thread)) < 0)
+    return -1;
+
+  return thread_join(thread);
+}
+
+int
+sys_thread_exit(void) {
+  void *retval;
+
+  if (argptr(0, (void*)&retval, sizeof(retval)) < 0)
+    return -1;
+  
+  thread_exit(retval);
+  return 0;
+}
+
+int
+sys_mutex_sleep(void) {
+  void *mutex;
+
+  if (argptr(0, (void*)&mutex, sizeof(mutex)) < 0)
+    return -1;
+
+  mutex_sleep(mutex);
+  return 0;
+}
+
+int
+sys_mutex_wakeup(void) {
+  void *mutex;
+
+  if (argptr(0, (void*)&mutex, sizeof(mutex)) < 0)
+    return -1;
+
+  mutex_wakeup(mutex);
+  return 0;
+}
+
+int
+sys_cond_sleep(void) {
+  void *cv, *mutex;
+
+  if (argptr(0, (void*)&cv, sizeof(cv)) < 0)
+    return -1;
+  if (argptr(1, (void*)&mutex, sizeof(mutex)) < 0)
+    return -1;
+
+  cond_sleep(cv, mutex);
+  return 0;
+}
+
+int
+sys_cond_wakeup(void) {
+  void *cv;
+
+  if (argptr(0, (void*)&cv, sizeof(cv)) < 0)
+    return -1;
+
+  cond_wakeup(cv);
+  return 0;
 }
 
 int

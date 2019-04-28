@@ -37,7 +37,7 @@ pthread_cond_wait(pthread_cond_t *cv, pthread_mutex_t *mutex) {
 
 /**
   * @brief Will wake up a process waiting on the given condition variable.
-  * @cv The condition variable to signal.
+  * @param cv The condition variable to signal.
   */
 void
 pthread_cond_signal(pthread_cond_t *cv) {

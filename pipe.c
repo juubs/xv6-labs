@@ -154,7 +154,7 @@ pipewriteable(struct pipe *p)
 {
   if (p->readopen == 0 || proc->killed)
     return -1;
-  return p->nwrite != p->nread + PIPESIZE;
+  return p->nwrite == p->nread + PIPESIZE;
 }
 
 /* Checks if this pipe is readable or not.

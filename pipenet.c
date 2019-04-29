@@ -62,14 +62,15 @@ pipenet(void)
 
       if (FD_ISSET(toshfds[1], &writefds)) { // ready to write to pipe
         //printf(1, "\nWriting to pipe\n");
-        write(toshfds[1], buf, bytesread); // write console data to pipe
+        if (bytesread > 0)
+          write(toshfds[1], buf, bytesread); // write console data to pipe
       }
 
       if (FD_ISSET(fromshfds[0], &readfds)) {
-          //printf(1, "\nReading from pipe\n");
+          printf(1, "\nReading from pipe\n");
           bytesread = read(fromshfds[0], buf, sizeof(buf)); // read from pipe
           if (bytesread > 0) {
-            //printf(1, "\nWriting to console\n");
+            printf(1, "\nWriting to console\n");
             if (write(0, buf, bytesread) < 0) { // write data from pipe to console
               printf(2, "Write error!");
               exit();

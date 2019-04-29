@@ -308,7 +308,7 @@ consolereadable(struct inode* ip)
 {
   if (proc->killed)
     return -1;
-  return (input.w != input.r);
+  return (input.w == input.r);
 }
 
 // Console select
